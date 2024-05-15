@@ -1,0 +1,95 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Cart API",
+        "description": "Api specification of Cart",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000"
+        }
+    ],
+    "paths": {
+        "api/carts": {
+            "post": {
+                "description": "Add menu to cart",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "menu_id": {
+                                        "type": "number"
+                                    },
+                                    "quantity": {
+                                        "type": "number"
+                                    },
+                                    "reservation_id": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Validation errors",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "validationerros": {
+                                        "description": "Validation errors",
+                                        "value": {
+                                            "errors": {
+                                                "menuId": "Menu Id must not be blank",
+                                                "reservationId": "ReservationId must not be blank",
+                                                "quantity": "Quantity must not be blank"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success add menu to cart",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "number"
+                                                },
+                                                "menu_id": {
+                                                    "type": "number"
+                                                },
+                                                "reservation_id": {
+                                                    "type": "number"
+                                                },
+                                                "quantity": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {}
+        },
+        "api/carts/{id}": {
+            "put": {},
+            "delete": {}
+        }
+    }
+}

@@ -17,13 +17,7 @@ class TableController extends Controller
         $data = $request->validated();
 
         if (Table::where('no', $data['no'])->count() > 0) {
-            throw new HttpResponseException(response([
-                'errors' => [
-                    'message' => [
-                        'No table already exists'
-                    ]
-                ]
-            ], 404));
+            $this->validationRequest('No table already exists', 400);
         }
 
         $table = new Table($data);
@@ -37,15 +31,48 @@ class TableController extends Controller
         $collection = Table::all();
 
         if ($collection->count() < 1 || $collection == null) {
-            throw new HttpResponseException(response([
-                'errors' => [
-                    'message' => [
-                        'No Records Found'
-                    ]
-                ]
-            ], 404));
+            $this->validationRequest('No Records Found', 404);
         }
 
         return new TableCollection($collection);
+    }
+
+    public function delete(int $id): JsonResponse
+    {
+        $result = Table::find($id);
+
+        if ($result == null) {
+            $this->validationRequest('Table id does not exist', 404);
+        }
+
+        $result->forceDelete();
+
+        return response()->json(['data' => true])->setStatusCode(200);
+    }
+
+    public function update(int $id, TableRequest $request)
+    {
+        $result = Table::find($id);
+        $data = $request->validated();
+
+        if ($result == null) {
+            $this->validationRequest('Table id does not exist', 404);
+        }
+
+        $table = new Table($data);
+        $table->save();
+
+        return new TableResource($table);
+    }
+    
+    public function validationRequest(string $message, int $statusCode)
+    {
+        throw new HttpResponseException(response([
+            'errors' => [
+                'message' => [
+                    $message
+                ]
+            ]
+        ], $statusCode));
     }
 }

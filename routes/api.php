@@ -4,7 +4,6 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\ApiAuthMiddleware;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,9 +36,10 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
         Route::post('/reservations', 'reserve');
     });
 
-    Route::controller(TableController::class)->group(function (){
+    Route::controller(TableController::class)->group(function () {
         Route::get('/tables', 'getAll');
         Route::post('/tables', 'insert');
-       
+        Route::delete('/tables/{id}', 'delete');
+        Route::put('/tables/{id}', 'update');
     });
 });

@@ -6,6 +6,7 @@ use App\Http\Requests\ReservationRequest;
 use App\Http\Resources\ReservationResource;
 use App\Models\Reservation;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
@@ -22,27 +23,41 @@ class ReservationController extends Controller
         return new ReservationResource($reservation);
     }
 
-    public function cancel()
-    {
-    }
-
     public function update(int $id, ReservationRequest $request): ReservationResource
     {
-        $user = Auth::user();
         $data = $request->validated();
-        $find = Reservation::find($id);
+        $reservation = Reservation::find($id);
 
-        if (!$find) {
-            throw new HttpResponseException(response()->json([
-                'errors' => [
-                    'id' => 'Cannot found reservation id'
-                ]
-            ], 400));
+        if (!$reservation) {
+            $this->validationRequest('Cannot found reservation id', 404);
         }
 
-        $reservation = new Reservation($data);
-        $reservation->user_id = $user->id;
+        $reservation->update($data);
 
         return new ReservationResource($reservation);
+    }
+
+    public function cancel(int $id): JsonResponse
+    {
+        $reservation = Reservation::find($id);
+
+        if (!$reservation) {
+            $this->validationRequest('Cannot found reservation id', 404);
+        }
+
+        $reservation->forceDelete();
+
+        return response()->json(['data' => true])->setStatusCode(200);
+    }
+
+    public function validationRequest(string $message, int $statusCode)
+    {
+        throw new HttpResponseException(response([
+            'errors' => [
+                'message' => [
+                    $message
+                ]
+            ]
+        ], $statusCode));
     }
 }

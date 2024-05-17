@@ -39,32 +39,42 @@ class TableController extends Controller
 
     public function delete(int $id): JsonResponse
     {
-        $result = Table::find($id);
+        $table = Table::find($id);
 
-        if ($result == null) {
+        if ($table == null) {
             $this->validationRequest('Table id does not exist', 404);
         }
 
-        $result->forceDelete();
+        $table->forceDelete();
 
         return response()->json(['data' => true])->setStatusCode(200);
     }
 
     public function update(int $id, TableRequest $request)
     {
-        $result = Table::find($id);
+        $table = Table::find($id);
         $data = $request->validated();
 
-        if ($result == null) {
+        if ($table == null) {
             $this->validationRequest('Table id does not exist', 404);
         }
 
-        $table = new Table($data);
-        $table->save();
+        $table->update($data);
 
         return new TableResource($table);
     }
-    
+
+    public function get(int $id): TableResource
+    {
+        $table = Table::find($id);
+
+        if ($table == null) {
+            $this->validationRequest('Table id does not exist', 404);
+        }
+
+        return new TableResource($table);
+    }
+
     public function validationRequest(string $message, int $statusCode)
     {
         throw new HttpResponseException(response([

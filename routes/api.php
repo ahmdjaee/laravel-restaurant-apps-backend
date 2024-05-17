@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\UserController;
@@ -17,13 +18,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
 Route::controller(UserController::class)->group(function () {
     Route::post('/users/register', 'register');
     Route::post('/users/login', 'login');
+});
+
+Route::controller(CategoryController::class)->group(function (){
+     Route::get('/categories', 'getAll');
+     Route::get('/categories/{id}', 'get');   
 });
 
 Route::middleware(ApiAuthMiddleware::class)->group(function () {
@@ -34,12 +36,21 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
 
     Route::controller(ReservationController::class)->group(function () {
         Route::post('/reservations', 'reserve');
+        Route::put('/reservations/{id}', 'update')->where('id', '[0-9]+');
+        Route::delete('/reservations/{id}', 'cancel')->where('id', '[0-9]+');
     });
 
     Route::controller(TableController::class)->group(function () {
         Route::get('/tables', 'getAll');
         Route::post('/tables', 'insert');
-        Route::delete('/tables/{id}', 'delete');
-        Route::put('/tables/{id}', 'update');
+        Route::get('/tables/{id}', 'get')->where('id', '[0-9]+');
+        Route::delete('/tables/{id}', 'delete')->where('id', '[0-9]+');
+        Route::put('/tables/{id}', 'update')->where('id', '[0-9]+');
+    });
+
+    Route::controller(CategoryController::class)->group(function(){
+        Route::post('/categories', 'create');
+        Route::put('/categories/{id}', 'update');
+        Route::delete('/categories/{id}', 'delete');
     });
 });

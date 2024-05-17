@@ -6,11 +6,12 @@ use App\Http\Requests\MenuRequest;
 use App\Http\Resources\MenuCollection;
 use App\Http\Resources\MenuResource;
 use App\Models\Menu;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Utils\Trait\ValidationRequest;
 use Illuminate\Http\JsonResponse;
 
 class MenuController extends Controller
 {
+    use ValidationRequest;
     public function create(MenuRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -47,16 +48,5 @@ class MenuController extends Controller
 
     public function get()
     {
-    }
-
-    public function validationRequest(string $message, int $statusCode)
-    {
-        throw new HttpResponseException(response([
-            'errors' => [
-                'message' => [
-                    $message
-                ]
-            ]
-        ], $statusCode));
     }
 }

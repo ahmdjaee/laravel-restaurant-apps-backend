@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CategoryCollection;
 use App\Models\Category;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Utils\Trait\ValidationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -12,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
+    use ValidationRequest;
+    
     public function create(Request $request): Response
     {
         $validator = Validator::make($request->all(), [
@@ -73,7 +74,7 @@ class CategoryController extends Controller
             $this->validationRequest('No Records Found', 404);
         }
 
-        return response(['data' => $collection])->json()->setStatusCode(200);
+        return response()->json(['data' => $collection])->setStatusCode(200);
     }
 
     public function delete(int $id): JsonResponse
@@ -101,14 +102,4 @@ class CategoryController extends Controller
         ;
     }
 
-    public function validationRequest(string $message, int $statusCode)
-    {
-        throw new HttpResponseException(response([
-            'errors' => [
-                'message' => [
-                    $message
-                ]
-            ]
-        ], $statusCode));
-    }
 }

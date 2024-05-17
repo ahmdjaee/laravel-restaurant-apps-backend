@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TableRequest;
-use App\Http\Resources\TableCollection;
 use App\Http\Resources\TableResource;
 use App\Models\Table;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Utils\Trait\ValidationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TableController extends Controller
 {
+    use ValidationRequest;
     public function create(TableRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -75,14 +75,4 @@ class TableController extends Controller
         return new TableResource($table);
     }
 
-    public function validationRequest(string $message, int $statusCode)
-    {
-        throw new HttpResponseException(response([
-            'errors' => [
-                'message' => [
-                    $message
-                ]
-            ]
-        ], $statusCode));
-    }
 }

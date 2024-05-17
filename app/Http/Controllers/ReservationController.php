@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ReservationRequest;
 use App\Http\Resources\ReservationResource;
 use App\Models\Reservation;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Utils\Trait\ValidationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
+    use ValidationRequest;
     public function reserve(ReservationRequest $request): ReservationResource
     {
         $user = Auth::user();
@@ -48,16 +49,5 @@ class ReservationController extends Controller
         $reservation->forceDelete();
 
         return response()->json(['data' => true])->setStatusCode(200);
-    }
-
-    public function validationRequest(string $message, int $statusCode)
-    {
-        throw new HttpResponseException(response([
-            'errors' => [
-                'message' => [
-                    $message
-                ]
-            ]
-        ], $statusCode));
     }
 }

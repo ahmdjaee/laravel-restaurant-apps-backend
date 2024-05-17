@@ -2,13 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Utils\Enum\StatusReservation;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Validation\Rule;
 
-class ReservationRequest extends FormRequest
+class MenuRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,13 +24,12 @@ class ReservationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'table_id' => ['required', 'exists:tables,id'],
-            'date' => ['required'],
-            'time' => ['required'],
-            'persons' => ['required', 'numeric'],
-            'status' => ['required', Rule::enum(StatusReservation::class)
-                ->only([StatusReservation::pending, StatusReservation::confirmed, StatusReservation::canceled])],
-            'notes' => ['nullable'],
+            'name' => ['required', 'max:100'],
+            'category_id' => ['required', 'numeric', 'exists:categories,id'],
+            'price' => ['required', 'numeric'],
+            'description' => 'nullable',
+            'stock' => ['required', 'numeric'],
+            'image' => ['required'],
         ];
     }
 

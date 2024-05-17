@@ -29,7 +29,7 @@ class ReservationController extends Controller
         $reservation = Reservation::find($id);
 
         if (!$reservation) {
-            $this->validationRequest('Cannot found reservation id', 404);
+            $this->validationRequest('Reservation id does not exist', 404);
         }
 
         $reservation->update($data);
@@ -42,7 +42,7 @@ class ReservationController extends Controller
         $reservation = Reservation::find($id);
 
         if (!$reservation) {
-            $this->validationRequest('Cannot found reservation id', 404);
+            $this->validationRequest('Reservation id does not exist', 404);
         }
 
         $reservation->forceDelete();

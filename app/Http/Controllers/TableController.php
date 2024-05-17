@@ -12,7 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class TableController extends Controller
 {
-    public function insert(TableRequest $request): JsonResponse
+    public function create(TableRequest $request): JsonResponse
     {
         $data = $request->validated();
 
@@ -34,7 +34,7 @@ class TableController extends Controller
             $this->validationRequest('No Records Found', 404);
         }
 
-        return new TableCollection($collection);
+        return TableResource::collection($collection);
     }
 
     public function delete(int $id): JsonResponse

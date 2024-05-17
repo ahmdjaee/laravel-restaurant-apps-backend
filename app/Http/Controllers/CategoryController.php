@@ -7,22 +7,24 @@ use App\Models\Category;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\ResponseFactory;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
-    public function create(Request $request)
+    public function create(Request $request): Response
     {
-        try {
-            $data = $request->validate([
-                'name' => ['required', 'max:100', 'unique:categories,name']
-            ]);
-        } catch (ValidationException $exception) {
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'max:100', 'unique:categories,name']
+        ]);
+
+        if ($validator->fails()) {
             return response([
-                'errors' => $exception->errors(),
+                'errors' => $validator->errors(),
             ], 400);
         }
+
+        $data = $validator->validate();
 
         $category = new Category($data);
         $category->save();
@@ -37,31 +39,33 @@ class CategoryController extends Controller
 
     public function update(int $id, Request $request)
     {
-        try {
-            $category = Category::find($id);
-            if ($category == null) {
-                $this->validationRequest('Category id does not exist', 404);
-            }
+        $category = Category::find($id);
+        if ($category == null) {
+            $this->validationRequest('Category id does not exist', 404);
+        }
 
-            $data = $request->validate([
-                'name' => ['required', 'max:100']
-            ]);
-            $category->update($data);
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'max:100', 'unique:categories,name']
+        ]);
 
+        if ($validator->fails()) {
             return response([
-                'data' => [
-                    'id' => $category->id,
-                    'name' => $category->name
-                ]
-            ], 200);
-        } catch (ValidationException $exception) {
-            return response([
-                'errors' => $exception->errors(),
+                'errors' => $validator->errors(),
             ], 400);
         }
+
+        $data = $validator->validate();
+        $category->update($data);
+
+        return response([
+            'data' => [
+                'id' => $category->id,
+                'name' => $category->name
+            ]
+        ], 200);
     }
 
-    public function getAll(): CategoryCollection
+    public function getAll(): JsonResponse
     {
         $collection = Category::all(['id', 'name']);
 
@@ -69,7 +73,7 @@ class CategoryController extends Controller
             $this->validationRequest('No Records Found', 404);
         }
 
-        return new CategoryCollection($collection);
+        return response(['data' => $collection])->json()->setStatusCode(200);
     }
 
     public function delete(int $id): JsonResponse
@@ -90,10 +94,11 @@ class CategoryController extends Controller
         $category = Category::find($id, ['id', 'name']);
 
         if ($category == null) {
-            $this->validationRequest('Table id does not exist', 404);
+            $this->validationRequest('Category id does not exist', 404);
         }
 
-        return response()->json(['data' => $category])->setStatusCode(200);;
+        return response()->json(['data' => $category])->setStatusCode(200);
+        ;
     }
 
     public function validationRequest(string $message, int $statusCode)

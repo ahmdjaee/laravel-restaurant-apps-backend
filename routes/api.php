@@ -44,6 +44,8 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
         Route::post('/reservations', 'reserve');
         Route::put('/reservations/{id}', 'update')->where('id', '[0-9]+');
         Route::delete('/reservations/{id}', 'cancel')->where('id', '[0-9]+');
+        // Route::get('/reservations/{id}', 'get')->where('id', '[0-9]+');
+        Route::get('/reservations', 'getAll');
     });
 
     Route::controller(TableController::class)->group(function () {
@@ -58,5 +60,12 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
         Route::post('/categories', 'create');
         Route::put('/categories/{id}', 'update')->where('id', '[0-9]+');
         Route::delete('/categories/{id}', 'delete')->where('id', '[0-9]+');
+    });
+
+    Route::controller(MenuController::class)->group(function () {
+        // Only admin can do this action
+        Route::post('/menus', 'create');
+        Route::put('/menus/{id}', 'update');
+        Route::delete('/menus/{id}', 'delete');
     });
 });

@@ -1,10 +1,13 @@
--- create database reservation_restaurant;
+CREATE DATABASE reservation_restaurant;
 
-use reservation_restaurant;
+USE reservation_restaurant;
 
-drop TABLE reservations;
-DROP Table migrations;
-DROP Table users;
-DROP Table personal_access_tokens;
-DROP Table cart_items;
+DROP TABLE reservations;
 
+DROP TABLE migrations;
+
+DROP TABLE users;
+
+DROP TABLE personal_access_tokens;
+
+DROP TABLE cart_items;

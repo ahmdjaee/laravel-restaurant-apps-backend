@@ -8,6 +8,9 @@ use App\Http\Resources\MenuResource;
 use App\Models\Menu;
 use App\Utils\Trait\ValidationRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 
 class MenuController extends Controller
 {
@@ -16,14 +19,21 @@ class MenuController extends Controller
     {
         $data = $request->validated();
 
-        $menu = new Menu($data);
-        $menu->save();
+        $menu = Menu::create($data);
 
         return (new MenuResource($menu))->response()->setStatusCode(201);
     }
 
-    public function update()
+    public function update(int $id, MenuRequest $request): MenuResource
     {
+        $menu = Menu::find($id);
+        if ($menu == null || !$menu) {
+            $this->validationRequest('Menu id does not exist', 404);
+        }
+        $data = $request->validated();
+        $menu->update($data);
+
+        return new MenuResource($menu);
     }
 
     public function getAll()
@@ -37,13 +47,25 @@ class MenuController extends Controller
         return new MenuCollection($collection);
     }
 
-    public function search()
+    public function search(Request $request)
     {
-
+        $search = $request->query('search', null);
+        $name = $request->query('name', null);
     }
 
-    public function delete()
+    public function delete(int $id): Response
     {
+        if (!Gate::allows('delete-menu')) {
+            $this->validationRequest('This action is not allowed.', 403);
+        }
+        $menu = Menu::find($id);
+        if ($menu == null || !$menu) {
+            $this->validationRequest('Menu id does not exist', 404);
+        }
+
+        $menu->forceDelete();
+
+        return response(['data' => true])->setStatusCode(200);
     }
 
     public function get()

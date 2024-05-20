@@ -16,10 +16,10 @@ class Menu extends Model
     public $timestamps = true;
     protected $fillable = [
         'name',
+        'category_id',
         'description',
         'price',
         'stock',
         'image',
-        'category_id'
     ];
 }

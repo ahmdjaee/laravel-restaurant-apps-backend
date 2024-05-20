@@ -38,7 +38,7 @@ class CategoryController extends Controller
         ], 201);
     }
 
-    public function update(int $id, Request $request)
+    public function update(int $id, Request $request) : Response
     {
         $category = Category::find($id);
         if ($category == null) {
@@ -99,7 +99,6 @@ class CategoryController extends Controller
         }
 
         return response()->json(['data' => $category])->setStatusCode(200);
-        ;
     }
 
 }

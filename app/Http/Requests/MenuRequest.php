@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Auth;
 
 class MenuRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class MenuRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user() != null;
+        return $this->user()->is_admin;
     }
 
     /**
@@ -38,5 +39,14 @@ class MenuRequest extends FormRequest
         throw new HttpResponseException(response([
             'errors' => $validator->getMessageBag()
         ], 400));
+    }
+
+    protected function failedAuthorization()
+    {
+        throw new HttpResponseException(response([
+            'errors' => [
+                'message' => 'This action is not allowed.'
+            ]
+        ], 403));
     }
 }

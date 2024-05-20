@@ -27,7 +27,7 @@ class TableRequest extends FormRequest
     {
         return [
             'no' => ['required'],
-            'status' => ['required', Rule::enum(StatusTable::class)->only([StatusTable::available, StatusTable::booked, StatusTable::unavailable])],
+            'status' => ['required', Rule::enum(StatusTable::class)->only([StatusTable::available, StatusTable::booked, StatusTable::used])],
             'capacity' => ['required', 'numeric']
         ];
     }

@@ -6,5 +6,5 @@ enum StatusTable: string
 {
     case available = 'available';
     case booked = 'booked';
-    case unavailable = 'unavailable';
+    case used = 'used';
 }

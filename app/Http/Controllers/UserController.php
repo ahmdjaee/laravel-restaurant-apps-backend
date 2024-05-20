@@ -6,6 +6,7 @@ use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Utils\Trait\ValidationRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +15,7 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
+    use ValidationRequest;
     public function register(UserRegisterRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -41,13 +43,7 @@ class UserController extends Controller
         $user = User::query()->where('email', '=', $data['email'])->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            throw new HttpResponseException(response([
-                'errors' => [
-                    'message' => [
-                        'Wrong username or password'
-                    ]
-                ]
-            ], 400));
+            $this->validationRequest('Wrong email or password', 400);
         }
 
         $user->token = Str::uuid()->toString();

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,13 +18,20 @@ class CartItem extends Model
     public $incrementing = true;
     public $timestamps = true;
 
-    public function user(): HasOne
-    {
-        return $this->hasOne(User::class, 'id', 'user_id');
-    }
+    protected $fillable = [
+        'menu_id',
+        'user_id',
+        'quantity',
+    ];
 
-    public function reservations(): HasOne
+    public function cart(): BelongsTo
     {
-        return $this->hasOne(Reservation::class, 'id', 'reservation_id');
+        return $this->belongsTo(Cart::class, 'cart_id', 'id');
     }
+    
+    public function menu(): BelongsTo
+    {
+        return $this->belongsTo(Menu::class, 'menu_id', 'id');
+    }
+    
 }

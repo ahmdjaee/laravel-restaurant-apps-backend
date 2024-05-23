@@ -20,8 +20,8 @@ class MenuResource extends JsonResource
             'description' => $this->description,
             'price' => $this->price,
             'stock' => $this->stock,
-            'category_id' => $this->category_id,
             'image' => $this->image,
+            'category' => $this->category,
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Cart;
 use App\Models\User;
 use App\Utils\Trait\ValidationRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -48,6 +49,14 @@ class UserController extends Controller
 
         $user->token = Str::uuid()->toString();
         $user->save();
+
+        $cart = Cart::query()->where('user_id', '=', $user->id)->first();
+
+        if (!$cart) {
+            $cart = new Cart();
+            $cart->user_id = $user->id;
+            $cart->save();
+        }
 
         return (new UserResource($user))->response();
     }

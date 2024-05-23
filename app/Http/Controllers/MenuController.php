@@ -36,9 +36,9 @@ class MenuController extends Controller
         return new MenuResource($menu);
     }
 
-    public function getAll()
+    public function getAll(): MenuCollection
     {
-        $collection = Menu::all();
+        $collection = Menu::with('category')->get();
 
         if ($collection->count() < 1 || $collection == null) {
             $this->validationRequest('No Records Found', 404);

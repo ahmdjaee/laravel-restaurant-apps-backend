@@ -27,9 +27,9 @@ class User extends Model implements Authenticatable
         'password',
     ];
 
-    public function cartItems(): BelongsTo
+    public function cart(): HasOne
     {
-        return $this->belongsTo(CartItem::class, 'id', 'user_id');
+        return $this->hasOne(Cart::class);
     }
 
     public function reservations(): BelongsTo

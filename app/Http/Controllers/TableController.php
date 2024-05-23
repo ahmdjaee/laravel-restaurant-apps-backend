@@ -7,6 +7,7 @@ use App\Http\Resources\TableResource;
 use App\Models\Table;
 use App\Utils\Trait\ValidationRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TableController extends Controller
@@ -26,9 +27,17 @@ class TableController extends Controller
         return (new TableResource($table))->response()->setStatusCode(201);
     }
 
-    public function getAll(): JsonResource
+    public function getAll(Request $request): JsonResource
     {
-        $collection = Table::all();
+        $collection = new Table();
+
+        $status = $request->query('status', null);
+
+        if ($status) {
+            $collection = $collection->where('status', $status);
+        }
+
+        $collection = $collection->get();
 
         if ($collection->count() < 1 || $collection == null) {
             $this->validationRequest('No Records Found', 404);

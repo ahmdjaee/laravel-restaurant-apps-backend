@@ -48,7 +48,7 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
         Route::put('/reservations/{id}', 'update')->where('id', '[0-9]+');
         Route::delete('/reservations/{id}', 'cancel')->where('id', '[0-9]+');
         // Route::get('/reservations/{id}', 'get')->where('id', '[0-9]+');
-        Route::get('/reservations', 'getAll');
+        Route::get('/reservations', 'get');
     });
 
     Route::controller(TableController::class)->group(function () {
@@ -76,5 +76,7 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
         Route::get('/carts', 'getAll');
         Route::get('/carts/{id}', 'get');
         Route::post('/carts', 'store');
+        Route::delete('/carts/{id}', 'delete');
+        Route::patch('/carts/{id}', 'update');
     });
 });

@@ -4,14 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CartItemRequest;
 use App\Http\Resources\CartItemResource;
+use App\Models\Cart;
 use App\Models\CartItem;
-use DB;
+use App\Utils\Trait\ValidationRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class CartItemController extends Controller
 {
-    public function store(CartItemRequest $request): CartItemResource
+    use ValidationRequest;
+    public function store(CartItemRequest $request): JsonResponse
     {
         $data = $request->validated();
         $user = Auth::user();
@@ -33,23 +38,58 @@ class CartItemController extends Controller
             $cartItem->save();
         }
 
-        return new CartItemResource($cartItem);
+        return (new CartItemResource($cartItem))->response()->setStatusCode(200);
     }
 
-    public function update(int $id, CartItemRequest $request)
+    public function update(int $id, Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'quantity' => ['required', 'numeric'],
+        ]);
 
+        if ($validator->fails()) {
+            return response([
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+
+        $data = $validator->validate();
+        $user = Auth::user();
+
+        $card = Cart::where('user_id', $user->id)->first();
+        $cartItem = CartItem::where('cart_id', $card->id)->find($id);
+
+        if ($cartItem == null) {
+            $this->validationRequest('Cart Item id does not exists', 404);
+        }
+
+        $cartItem->update(['quantity' => $data['quantity']]);
+
+        return (new CartItemResource($cartItem))->response()->setStatusCode(200);
     }
 
 
-    public function delete()
+    public function delete(int $id)
     {
+        $user = Auth::user();
+
+        $card = Cart::where('user_id', $user->id)->first();
+
+        $cartItem = CartItem::where('cart_id', $card->id)->find($id);
+
+        if ($cartItem == null) {
+            $this->validationRequest('Cart Item id does not exists', 404);
+        }
+
+        $cartItem->forceDelete();
+
+        return response(['data' => true])->setStatusCode(200);
     }
 
     public function getAll(): ResourceCollection
     {
         $user = Auth::user();
-        $cartItem = CartItem::with('menu')->where('cart_id', $user->cart->id)->get();
+        $cartItem = CartItem::where('cart_id', $user->cart->id)->get();
 
         if ($cartItem->isEmpty()) {
             $this->validationRequest('No Records Found', 404);

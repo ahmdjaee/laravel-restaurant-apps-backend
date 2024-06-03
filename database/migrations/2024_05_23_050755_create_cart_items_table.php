@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('cart_id')->nullable(false);
             $table->unsignedBigInteger('menu_id')->nullable(false);
             $table->integer('quantity')->nullable(false);
+            $table->text('notes')->nullable();
             $table->timestamps();
 
             $table->foreign('cart_id')->references('id')->on('carts');

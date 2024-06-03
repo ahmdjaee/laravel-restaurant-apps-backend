@@ -3,6 +3,7 @@ CREATE DATABASE reservation_restaurant;
 
 USE reservation_restaurant;
 
+
 SELECT
     *
 FROM
@@ -28,3 +29,5 @@ WHERE
     cart_id = 1
 GROUP BY
     menu_id;
+
+    drop Table orders;

@@ -32,10 +32,7 @@ class User extends Model implements Authenticatable
         return $this->hasOne(Cart::class);
     }
 
-    public function reservations(): BelongsTo
-    {
-        return $this->belongsTo(Reservation::class, 'id', 'user_id');
-    }
+  
 
     public function getAuthIdentifierName()
     {

@@ -68,7 +68,14 @@ class MenuController extends Controller
         return response(['data' => true])->setStatusCode(200);
     }
 
-    public function get()
+    public function get(int $id): MenuResource
     {
+        $menu = Menu::find($id);
+
+        if ($menu == null) {
+            $this->validationRequest('Menu id does not exist', 404);
+        }
+
+        return new MenuResource($menu);
     }
 }

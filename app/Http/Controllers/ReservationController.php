@@ -52,17 +52,17 @@ class ReservationController extends Controller
         return response()->json(['data' => true])->setStatusCode(200);
     }
 
-    // public function get(int $id): ReservationResource
-    // {
-    //     $user = Auth::user();
-    //     $reservation = Reservation::where('user_id', $user->id)->find($id);
+    public function get(): ReservationResource
+    {
+        $user = Auth::user();
+        $reservation = Reservation::where('user_id', $user->id)->first();
 
-    //     if (!$reservation) {
-    //         $this->validationRequest('Reservation id does not exist', 404);
-    //     }
+        if (!$reservation) {
+            $this->validationRequest('No data found', 404);
+        }
 
-    //     return new ReservationResource($reservation);
-    // }
+        return new ReservationResource($reservation);
+    }
 
     public function getAll(Request $request): JsonResponse
     {

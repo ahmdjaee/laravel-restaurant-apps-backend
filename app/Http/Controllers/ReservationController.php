@@ -18,6 +18,10 @@ class ReservationController extends Controller
         $user = Auth::user();
         $data = $request->validated();
 
+        if (Reservation::where('user_id', $user->id)->where('status', 'pending')->count() > 0) {
+            $this->validationRequest("Complete the order or cancel the reservation to make another reservation.", 400);
+        }
+
         $reservation = new Reservation($data);
         $reservation->user_id = $user->id;
         $reservation->save();
@@ -58,7 +62,7 @@ class ReservationController extends Controller
         $reservation = Reservation::where('user_id', $user->id)->first();
 
         if (!$reservation) {
-            $this->validationRequest('No data found', 404);
+            $this->validationRequest('No Records Found', 404);
         }
 
         return new ReservationResource($reservation);

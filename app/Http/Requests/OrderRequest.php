@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Utils\Enum\StatusOrder;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class OrderRequest extends FormRequest
 {
@@ -22,9 +26,23 @@ class OrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cart_item_id' => ['required', 'numeric'],
+            // order items
+            'items' => ['required'], // array
+
+            // orders
             'reservation_id' => ['required', 'numeric'],
+            'status' => ['required', Rule::enum(StatusOrder::class)
+                ->only([
+                    StatusOrder::new, StatusOrder::checkout, StatusOrder::paid, StatusOrder::failed,  StatusOrder::completed
+                ])],
             'total_payment' => ['required', 'numeric']
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response([
+            'errors' => $validator->getMessageBag()
+        ], 400));
     }
 }

@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
@@ -32,7 +31,10 @@ class User extends Model implements Authenticatable
         return $this->hasOne(Cart::class);
     }
 
-  
+    public function reservation(): HasMany
+    {
+        return $this->hasMany(Reservation::class, 'user_id', );
+    }
 
     public function getAuthIdentifierName()
     {

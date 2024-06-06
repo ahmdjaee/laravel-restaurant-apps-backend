@@ -3,6 +3,7 @@
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\UserController;
@@ -24,8 +25,6 @@ Route::controller(UserController::class)->group(function () {
     Route::post('/users/register', 'register');
     Route::post('/users/login', 'login');
 });
-
-
 
 Route::controller(CategoryController::class)->group(function () {
     Route::get('/categories', 'getAll');
@@ -78,5 +77,11 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
         Route::post('/carts', 'store');
         Route::delete('/carts/{id}', 'delete');
         Route::patch('/carts/{id}', 'update');
+    });
+
+    Route::controller(OrderController::class)->group(function () {
+        // Route::get('/orders/{id}', 'show');
+        Route::get('/orders', 'getAll');
+        Route::post('/orders', 'order');
     });
 });

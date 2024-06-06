@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('cart_item_id')->nullable(false);
+            $table->unsignedBigInteger('user_id')->nullable(false);
+            $table->string('token')->nullable();
             $table->unsignedBigInteger('reservation_id')->nullable(false);
+            $table->enum('status', ['new',  'checkout', 'paid', 'failed', 'completed'])->nullable()->default('new');
             $table->bigInteger('total_payment')->nullable()->default(12);
             $table->timestamps();
 
-            $table->foreign('cart_item_id')->references('id')->on('cart_items');
             $table->foreign('reservation_id')->references('id')->on('reservations');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

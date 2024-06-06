@@ -3,6 +3,13 @@ CREATE DATABASE reservation_restaurant;
 
 USE reservation_restaurant;
 
+SELECT
+    *
+FROM
+    orders
+    INNER JOIN reservations ON orders.reservation_id = reservations.id
+    INNER JOIN users ON reservations.user_id = users.id
+    WHERE reservations.user_id = 2;
 
 SELECT
     *
@@ -17,7 +24,7 @@ WHERE
     );
 
 SELECT
-    menus.id as "menu id",
+    menus.id AS "menu id",
     menus.name,
     menus.price,
     COUNT(cart_items.menu_id) AS quantity,
@@ -30,4 +37,4 @@ WHERE
 GROUP BY
     menu_id;
 
-    drop Table orders;
+DROP TABLE order_items;

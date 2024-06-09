@@ -9,6 +9,8 @@ use App\Models\OrderItem;
 use App\Utils\Trait\ValidationRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class OrderController extends Controller
 {
@@ -18,41 +20,16 @@ class OrderController extends Controller
         $data = $request->validated();
         $user = Auth::user();
 
-        // $findOrder = Order::whereHas('reservation', function (Builder $query) use ($user) {
-        //     $query->where('user_id', $user->id);
-        // })->first();
-
-        // $order = new Order($data);
-
-        // if (!$findOrder) {
-        //     $order->user_id = $user->id;
-        //     $order->save();
-        // }else{
-        //     $order = $findOrder; 
-        // }
-
-        // $items = [];
-
-        // foreach ($data['items'] as $item) {
-        //     $items[] = [
-        //         'order_id' => $order->id,
-        //         'menu_id' => $item['menu_id'],
-        //         'price' => $item['price'],
-        //         'quantity' => $item['quantity'],
-        //     ];
-        // }
-
-        // OrderItem::where('order_id', $order->id)->delete();
-
-        // OrderItem::insert($items);
-
-        // return new OrderResource($order);
+        Config::$serverKey = 'SB-Mid-server-0Car7A3yMvTA8f5x5spyuLoe';
+        Config::$isProduction = false;
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
 
         $order = Order::firstOrCreate(
             ['user_id' => $user->id],
             $data
         );
-    
+
         $items = array_map(function ($item) use ($order) {
             return [
                 'order_id' => $order->id,
@@ -61,29 +38,43 @@ class OrderController extends Controller
                 'quantity' => $item['quantity'],
             ];
         }, $data['items']);
-    
-        DB::transaction(function () use ($order, $items) {
+
+        DB::transaction(function () use ($order, $items, $user) {
             OrderItem::where('order_id', $order->id)->delete();
             OrderItem::insert($items);
-        }); 
-    
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $order->id,
+                    'gross_amount' => $order->total_payment
+                ],
+                'customer_details' => [
+                    'first_name' => $user->name,
+                    'email' => $user->email
+                ]
+            ];
+
+            $snapToken = Snap::getSnapToken($params);
+            $order->token = $snapToken;
+        });
+
         return new OrderResource($order);
     }
 
-    // public function getAll()
-    // {
-    //     $user = Auth::user();
+    public function getAll()
+    {
+        $user = Auth::user();
 
-    //     $orders = Order::join('reservations', 'orders.reservation_id', '=', 'reservations.id')
-    //         ->join('users', 'reservations.user_id', '=', 'users.id')
-    //         ->where('reservations.user_id', $user->id)
-    //         ->select('orders.*')
-    //         ->get();
+        $orders = Order::join('reservations', 'orders.reservation_id', '=', 'reservations.id')
+            ->join('users', 'reservations.user_id', '=', 'users.id')
+            ->where('reservations.user_id', $user->id)
+            ->select('orders.*')
+            ->get();
 
-    //     if ($orders->count() == 0) {
-    //         $this->validationRequest('No Records Found', 404);
-    //     }
+        if ($orders->count() == 0) {
+            $this->validationRequest('No Records Found', 404);
+        }
 
-    //     return OrderResource::collection($orders);
-    // }
+        return OrderResource::collection($orders);
+    }
 }

@@ -19,6 +19,7 @@ class OrderResource extends JsonResource
             'items' => $this->order_items,
             'reservation' => $this->reservation,
             'status' => $this->status,
+            'token' => $this->token,
             'total_payment' => $this->total_payment,
         ];
     }

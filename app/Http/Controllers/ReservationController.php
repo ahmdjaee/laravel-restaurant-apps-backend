@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class ReservationController extends Controller
+class   ReservationController extends Controller
 {
     use ValidationRequest;
     public function reserve(ReservationRequest $request): ReservationResource
@@ -59,7 +59,7 @@ class ReservationController extends Controller
     public function get(): ReservationResource
     {
         $user = Auth::user();
-        $reservation = Reservation::where('user_id', $user->id)->first();
+        $reservation = Reservation::where('user_id', $user->id)->where('status', 'pending')->first();
 
         if (!$reservation) {
             $this->validationRequest('No Records Found', 404);

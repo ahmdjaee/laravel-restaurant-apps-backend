@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CartItemController extends Controller
@@ -86,15 +87,24 @@ class CartItemController extends Controller
         return response(['data' => true])->setStatusCode(200);
     }
 
-    public function getAll(): ResourceCollection
+    public function getAll() : ResourceCollection
     {
         $user = Auth::user();
-        $cartItem = CartItem::where('cart_id', $user->cart->id)->get();
 
-        if ($cartItem->isEmpty()) {
+        // Subquery untuk menghitung total_quantity
+        $totalQuantity = CartItem::where('cart_id', $user->cart->id)
+            ->select(DB::raw('SUM(quantity)'))
+            ->pluck('SUM(quantity)')->first();
+
+        // Query utama untuk mendapatkan data cart items dengan kolom tambahan total_quantity
+        $cartItems = CartItem::where('cart_id', $user->cart->id)
+            ->select('*', DB::raw($totalQuantity . ' as total_quantity'))
+            ->get();
+
+        if ($cartItems->isEmpty()) {
             $this->validationRequest('No Records Found', 404);
         }
 
-        return CartItemResource::collection($cartItem);
+        return CartItemResource::collection($cartItems);
     }
 }

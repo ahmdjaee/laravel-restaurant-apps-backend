@@ -25,10 +25,14 @@ class OrderController extends Controller
         Config::$isSanitized = true;
         Config::$is3ds = true;
 
-        $order = Order::firstOrCreate(
-            ['user_id' => $user->id],
-            $data
-        );
+        // $order = Order::firstOrCreate(
+        //     ['user_id' => $user->id],
+        //     $data
+        // );
+
+        $order = new Order($data);
+        $order->user_id = $user->id;
+        $order->save();
 
         $items = array_map(function ($item) use ($order) {
             return [
@@ -65,11 +69,13 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        $orders = Order::join('reservations', 'orders.reservation_id', '=', 'reservations.id')
-            ->join('users', 'reservations.user_id', '=', 'users.id')
-            ->where('reservations.user_id', $user->id)
-            ->select('orders.*')
-            ->get();
+        $orders = Order::where('user_id', $user->id)->get();
+
+        // $orders = Order::join('reservations', 'orders.reservation_id', '=', 'reservations.id')
+        //     ->join('users', 'reservations.user_id', '=', 'users.id')
+        //     ->where('reservations.user_id', $user->id)
+        //     ->select('orders.*')
+        //     ->get();
 
         if ($orders->count() == 0) {
             $this->validationRequest('No Records Found', 404);

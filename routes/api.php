@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReservationController;
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 Route::controller(UserController::class)->group(function () {
     Route::post('/users/register', 'register');
     Route::post('/users/login', 'login');
+    Route::post('/admin/login', 'loginAdmin');
 });
 
 Route::controller(CategoryController::class)->group(function () {
@@ -36,10 +38,19 @@ Route::controller(MenuController::class)->group(function () {
     Route::get('/menus/{id}', 'get');
 });
 
+
+Route::get('/img/{path}', [ImageController::class, 'show'])
+    ->where('path', '.*')
+    ->name('image');
+
 Route::middleware(ApiAuthMiddleware::class)->group(function () {
     Route::controller(UserController::class)->group(function () {
         Route::get('/users/current', 'current');
         Route::delete('/users/logout', 'logout');
+        Route::post('/users/update', 'update');
+        
+        // Admin
+        Route::get('/admin/users', 'getAll');
     });
 
     Route::controller(ReservationController::class)->group(function () {
@@ -59,16 +70,16 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
     });
 
     Route::controller(CategoryController::class)->group(function () {
-        Route::post('/categories', 'create');
-        Route::put('/categories/{id}', 'update')->where('id', '[0-9]+');
-        Route::delete('/categories/{id}', 'delete')->where('id', '[0-9]+');
+        Route::post('/admin/categories', 'create');
+        Route::put('/admin/categories/{id}', 'update')->where('id', '[0-9]+');
+        Route::delete('/admin/categories/{id}', 'delete')->where('id', '[0-9]+');
     });
 
     Route::controller(MenuController::class)->group(function () {
         // Only admin can do this action
-        Route::post('/menus', 'create');
-        Route::put('/menus/{id}', 'update');
-        Route::delete('/menus/{id}', 'delete');
+        Route::post('/admin/menus', 'create');
+        Route::put('/admin/menus/{id}', 'update');
+        Route::delete('/admin/menus/{id}', 'delete');
     });
 
     Route::controller(CartItemController::class)->group(function () {

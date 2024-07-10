@@ -8,18 +8,29 @@ use App\Http\Resources\MenuResource;
 use App\Models\Menu;
 use App\Utils\Trait\ValidationRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller
 {
     use ValidationRequest;
     public function create(MenuRequest $request): JsonResponse
     {
+        if (!Gate::allows('is-admin')) {
+            $this->validationRequest('This action is not allowed.', 403);
+        }
+
         $data = $request->validated();
 
-        $menu = Menu::create($data);
+        $menu = Menu::create([
+            'name' => $data['name'],
+            'category_id' => $data['category_id'],
+            'price' => $data['price'],
+            'description' => $data['description'],
+            'stock' => $data['stock'],
+            'image' => $request->file('image')->store('menus'),
+        ]);
 
         return (new MenuResource($menu))->response()->setStatusCode(201);
     }
@@ -32,6 +43,13 @@ class MenuController extends Controller
         }
         $data = $request->validated();
         $menu->update($data);
+
+        if ($request->hasFile('image')) {
+            $menu->image != null && Storage::delete($menu->image);
+            $menu->update([
+                'image' => $request->file('image')->store('menus'),
+            ]);
+        }
 
         return new MenuResource($menu);
     }
@@ -47,11 +65,6 @@ class MenuController extends Controller
         return new MenuCollection($collection);
     }
 
-    public function search(Request $request)
-    {
-        $search = $request->query('search', null);
-        $name = $request->query('name', null);
-    }
 
     public function delete(int $id): Response
     {

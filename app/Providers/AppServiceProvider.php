@@ -27,6 +27,10 @@ class AppServiceProvider extends ServiceProvider
             Log::info("Query : $query->sql");
         });
 
+        Gate::define('is-admin', function (User $user) {
+            return $user->is_admin == true;
+        });
+
         Gate::define('post-menu', function (User $user) {
             return $user->is_admin == true;
         });

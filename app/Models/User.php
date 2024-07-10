@@ -24,6 +24,7 @@ class User extends Model implements Authenticatable
         'name',
         'email',
         'password',
+        'photo',
     ];
 
     public function cart(): HasOne

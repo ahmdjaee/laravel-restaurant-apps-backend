@@ -28,9 +28,9 @@ class MenuRequest extends FormRequest
             'name' => ['required', 'max:100'],
             'category_id' => ['required', 'numeric', 'exists:categories,id'],
             'price' => ['required', 'numeric'],
-            'description' => 'nullable',
+            'description' => ['required'],
             'stock' => ['required', 'numeric'],
-            'image' => ['required'],
+            'image' => ['required', 'image', 'max:4096'],
         ];
     }
 

@@ -40,7 +40,10 @@ class Kernel extends HttpKernel
 
         'api' => [
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+            // \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+            
+            //NOTE - Ganti rate limit ke 1000 request per 1 menit
+            'throttle:1000,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];

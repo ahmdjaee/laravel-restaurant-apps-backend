@@ -7,12 +7,13 @@ use App\Utils\Trait\ValidationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
     use ValidationRequest;
-    
+
     public function create(Request $request): Response
     {
         $validator = Validator::make($request->all(), [
@@ -38,7 +39,7 @@ class CategoryController extends Controller
         ], 201);
     }
 
-    public function update(int $id, Request $request) : Response
+    public function update(int $id, Request $request): Response
     {
         $category = Category::find($id);
         if ($category == null) {
@@ -79,6 +80,9 @@ class CategoryController extends Controller
 
     public function delete(int $id): JsonResponse
     {
+        if (!Gate::allows('is-admin')) {
+            $this->validationRequest('This action is not allowed.', 403);
+        }
         $category = Category::find($id);
 
         if ($category == null) {
@@ -100,5 +104,4 @@ class CategoryController extends Controller
 
         return response()->json(['data' => $category])->setStatusCode(200);
     }
-
 }

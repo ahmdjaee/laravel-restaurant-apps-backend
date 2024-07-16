@@ -9,6 +9,7 @@ use App\Utils\Trait\ValidationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Gate;
 
 class TableController extends Controller
 {
@@ -18,7 +19,7 @@ class TableController extends Controller
         $data = $request->validated();
 
         if (Table::where('no', $data['no'])->count() > 0) {
-            $this->validationRequest('No table already exists', 400);
+            $this->validationRequest('Number table already exists', 400);
         }
 
         $table = new Table($data);
@@ -48,6 +49,9 @@ class TableController extends Controller
 
     public function delete(int $id): JsonResponse
     {
+        if (!Gate::allows('is-admin')) {
+            $this->validationRequest('This action is not allowed.', 403);
+        }
         $table = Table::find($id);
 
         if ($table == null) {
@@ -83,5 +87,4 @@ class TableController extends Controller
 
         return new TableResource($table);
     }
-
 }

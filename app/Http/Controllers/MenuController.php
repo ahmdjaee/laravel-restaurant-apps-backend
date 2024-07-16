@@ -57,18 +57,13 @@ class MenuController extends Controller
     public function getAll(): MenuCollection
     {
         $collection = Menu::with('category')->get();
-
-        if ($collection->count() < 1 || $collection == null) {
-            $this->validationRequest('No Records Found', 404);
-        }
-
         return new MenuCollection($collection);
     }
 
 
     public function delete(int $id): Response
     {
-        if (!Gate::allows('delete-menu')) {
+        if (!Gate::allows('is-admin')) {
             $this->validationRequest('This action is not allowed.', 403);
         }
         $menu = Menu::find($id);
@@ -76,7 +71,7 @@ class MenuController extends Controller
             $this->validationRequest('Menu id does not exist', 404);
         }
 
-        $menu->forceDelete();
+        $menu->delete();
 
         return response(['data' => true])->setStatusCode(200);
     }

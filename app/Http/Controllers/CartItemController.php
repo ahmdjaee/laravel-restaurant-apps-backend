@@ -22,6 +22,14 @@ class CartItemController extends Controller
         $data = $request->validated();
         $user = Auth::user();
 
+        $cart = Cart::query()->where('user_id', '=', $user->id)->first();
+
+        if (!$cart) {
+            $cart = new Cart();
+            $cart->user_id = $user->id;
+            $cart->save();
+        }
+
         $cart = $user->cart;
 
         $cartItem = new CartItem($data);

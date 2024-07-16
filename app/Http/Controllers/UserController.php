@@ -57,14 +57,6 @@ class UserController extends Controller
         $user->token = Str::uuid()->toString();
         $user->save();
 
-        $cart = Cart::query()->where('user_id', '=', $user->id)->first();
-
-        if (!$cart) {
-            $cart = new Cart();
-            $cart->user_id = $user->id;
-            $cart->save();
-        }
-
         return (new UserResource($user))->response();
     }
     public function loginAdmin(UserLoginRequest $request): JsonResponse
@@ -151,5 +143,25 @@ class UserController extends Controller
         // }
 
         return UserResource::collection($collection);
+    }
+
+    public function delete(int $id)
+    {
+
+        if (!Gate::allows('is-admin')) {
+            $this->validationRequest('This action is not allowed.', 403);
+        }
+
+        $user = User::find($id);
+
+        if ($user == null || !$user) {
+            $this->validationRequest('User id does not exist', 404);
+        }
+
+        $user->delete();
+
+        return response()->json([
+            'data' => true
+        ], 200);
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MenuResource extends JsonResource
+class EventResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,13 +16,14 @@ class MenuResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'title' => $this->title,
             'description' => $this->description,
-            'price' => $this->price,
-            'stock' => $this->stock,
             'image' => url()->route('image', ['path' => $this->image, 'w' => 300, 'h' => 300, 'fit' => 'crop']),
             'image_large' => url()->route('image', ['path' => $this->image, 'w' => 800, 'h' => 800, 'fit' => 'crop']),
-            'category' => $this->category,
+            'type' => $this->type,
+            'active' => $this->whenNotNull($this->active, true),
+            'event_start' => $this->event_start,
+            'event_end' => $this->event_end,
         ];
     }
 }

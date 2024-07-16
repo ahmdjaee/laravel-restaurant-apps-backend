@@ -17,10 +17,6 @@ class MenuController extends Controller
     use ValidationRequest;
     public function create(MenuRequest $request): JsonResponse
     {
-        if (!Gate::allows('is-admin')) {
-            $this->validationRequest('This action is not allowed.', 403);
-        }
-
         $data = $request->validated();
 
         $menu = Menu::create([
@@ -63,9 +59,6 @@ class MenuController extends Controller
 
     public function delete(int $id): Response
     {
-        if (!Gate::allows('is-admin')) {
-            $this->validationRequest('This action is not allowed.', 403);
-        }
         $menu = Menu::find($id);
         if ($menu == null || !$menu) {
             $this->validationRequest('Menu id does not exist', 404);

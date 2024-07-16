@@ -119,10 +119,6 @@ class UserController extends Controller
 
     public function getAll(Request $request): ResourceCollection
     {
-        if (!Gate::allows('is-admin')) {
-            $this->validationRequest('This action is not allowed.', 403);
-        }
-
         $perPage = $request->query('per_page', 10);
         $page = $request->query('page', 1);
 
@@ -147,11 +143,6 @@ class UserController extends Controller
 
     public function delete(int $id)
     {
-
-        if (!Gate::allows('is-admin')) {
-            $this->validationRequest('This action is not allowed.', 403);
-        }
-
         $user = User::find($id);
 
         if ($user == null || !$user) {

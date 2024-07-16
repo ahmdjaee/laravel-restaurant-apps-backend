@@ -40,6 +40,11 @@ Route::controller(MenuController::class)->group(function () {
     Route::get('/menus/{id}', 'get');
 });
 
+Route::controller(EventController::class)->group(function () {
+    Route::get('/events', 'getAll');
+    Route::get('/events/{id}', 'get');
+});
+
 Route::get('/img/{path}', [ImageController::class, 'show'])
     ->where('path', '.*')
     ->name('image');

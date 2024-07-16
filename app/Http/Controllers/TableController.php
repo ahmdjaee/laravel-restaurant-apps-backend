@@ -49,9 +49,6 @@ class TableController extends Controller
 
     public function delete(int $id): JsonResponse
     {
-        if (!Gate::allows('is-admin')) {
-            $this->validationRequest('This action is not allowed.', 403);
-        }
         $table = Table::find($id);
 
         if ($table == null) {

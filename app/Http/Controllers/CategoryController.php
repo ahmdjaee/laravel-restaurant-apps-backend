@@ -80,9 +80,6 @@ class CategoryController extends Controller
 
     public function delete(int $id): JsonResponse
     {
-        if (!Gate::allows('is-admin')) {
-            $this->validationRequest('This action is not allowed.', 403);
-        }
         $category = Category::find($id);
 
         if ($category == null) {

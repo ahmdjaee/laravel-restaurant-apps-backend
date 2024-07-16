@@ -20,7 +20,7 @@ class OrderController extends Controller
         $data = $request->validated();
         $user = Auth::user();
 
-        Config::$serverKey = 'SB-Mid-server-0Car7A3yMvTA8f5x5spyuLoe';
+        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
         Config::$isProduction = false;
         Config::$isSanitized = true;
         Config::$is3ds = true;

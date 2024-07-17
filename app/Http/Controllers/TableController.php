@@ -5,15 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TableRequest;
 use App\Http\Resources\TableResource;
 use App\Models\Table;
-use App\Utils\Trait\ValidationRequest;
+use App\Utils\Trait\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Gate;
 
 class TableController extends Controller
 {
-    use ValidationRequest;
+    use ApiResponse;
     public function create(TableRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -25,7 +24,7 @@ class TableController extends Controller
         $table = new Table($data);
         $table->save();
 
-        return (new TableResource($table))->response()->setStatusCode(201);
+        return $this->apiResponse(new TableResource($table), 'Table created successfully', 201);
     }
 
     public function getAll(Request $request): JsonResource
@@ -57,7 +56,7 @@ class TableController extends Controller
 
         $table->forceDelete();
 
-        return response()->json(['data' => true])->setStatusCode(200);
+        return $this->apiResponse(true, 'Table deleted successfully', 200);
     }
 
     public function update(int $id, TableRequest $request)
@@ -71,7 +70,7 @@ class TableController extends Controller
 
         $table->update($data);
 
-        return new TableResource($table);
+        return $this->apiResponse(new TableResource($table), 'Table updated successfully', 200);
     }
 
     public function get(int $id): TableResource

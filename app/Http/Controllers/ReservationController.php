@@ -5,14 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ReservationRequest;
 use App\Http\Resources\ReservationResource;
 use App\Models\Reservation;
-use App\Utils\Trait\ValidationRequest;
+use App\Utils\Trait\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class   ReservationController extends Controller
 {
-    use ValidationRequest;
+    use ApiResponse;
     public function reserve(ReservationRequest $request): ReservationResource
     {
         $user = Auth::user();

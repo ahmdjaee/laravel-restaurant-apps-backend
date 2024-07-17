@@ -3,16 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Utils\Trait\ValidationRequest;
+use App\Utils\Trait\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
-    use ValidationRequest;
+    use ApiResponse;
 
     public function create(Request $request): Response
     {
@@ -88,7 +87,7 @@ class CategoryController extends Controller
 
         $category->forceDelete();
 
-        return response()->json(['data' => true])->setStatusCode(200);
+        return $this->apiResponse(true, 'Category deleted successfully', 200);;
     }
 
     public function get(int $id): JsonResponse

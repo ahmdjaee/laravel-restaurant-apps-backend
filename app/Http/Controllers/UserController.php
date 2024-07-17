@@ -6,24 +6,21 @@ use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
-use App\Models\Cart;
 use App\Models\User;
-use App\Utils\Trait\ValidationRequest;
+use App\Utils\Trait\ApiResponse;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    use ValidationRequest;
+    use ApiResponse;
     public function register(UserRegisterRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -41,7 +38,7 @@ class UserController extends Controller
 
         $user->save();
 
-        return (new UserResource($user))->response()->setStatusCode(201);
+        return $this->apiResponse(new UserResource($user), 'User registered successfully', 201);;
     }
 
     public function login(UserLoginRequest $request): JsonResponse
@@ -95,7 +92,7 @@ class UserController extends Controller
             ]);
         }
 
-        return (new UserResource($user))->response()->setStatusCode(200);
+        return $this->apiResponse(new UserResource($user), 'User updated successfully', 200);
     }
 
     public function current(): UserResource
@@ -134,14 +131,10 @@ class UserController extends Controller
         /** @var User $collection */
         $collection = $collection->paginate(perPage: $perPage, page: $page)->onEachSide(1)->withQueryString();
 
-        // if ($collection->count() < 1 || $collection == null) {
-        //     $this->validationRequest('No Records Found', 404);
-        // }
-
         return UserResource::collection($collection);
     }
 
-    public function delete(int $id)
+    public function delete(int $id) : JsonResponse
     {
         $user = User::find($id);
 
@@ -151,8 +144,6 @@ class UserController extends Controller
 
         $user->delete();
 
-        return response()->json([
-            'data' => true
-        ], 200);
+        return $this->apiResponse(true, 'User deleted successfully', 200);
     }
 }

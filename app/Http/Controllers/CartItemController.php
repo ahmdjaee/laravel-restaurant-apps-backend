@@ -6,7 +6,7 @@ use App\Http\Requests\CartItemRequest;
 use App\Http\Resources\CartItemResource;
 use App\Models\Cart;
 use App\Models\CartItem;
-use App\Utils\Trait\ValidationRequest;
+use App\Utils\Trait\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CartItemController extends Controller
 {
-    use ValidationRequest;
+    use ApiResponse;
     public function store(CartItemRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -47,7 +47,7 @@ class CartItemController extends Controller
             $cartItem->save();
         }
 
-        return (new CartItemResource($cartItem))->response()->setStatusCode(200);
+        return $this->apiResponse(new CartItemResource($cartItem), 'Item added successfully', 201);;
     }
 
     public function update(int $id, Request $request)

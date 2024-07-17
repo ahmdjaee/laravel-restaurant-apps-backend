@@ -9,4 +9,4 @@ enum TypeEvent: string
     case flashSale = 'Flash Sale';
     case workshop = 'Workshop';
     case festival = 'Festival';
-} 
+}

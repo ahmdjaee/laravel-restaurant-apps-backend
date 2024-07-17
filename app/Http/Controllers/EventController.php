@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EventRequest;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
+use App\Utils\Trait\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
+
+    use ApiResponse;
     public function create(EventRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -20,19 +22,27 @@ class EventController extends Controller
         $event->image = $request->file('image')->store('events');
         $event->save();
 
-        return (new EventResource($event))->response()->setStatusCode(201);
+        return $this->apiResponse(new EventResource($event), 'Event created successfully', 201);
     }
 
-    public function update()
+    public function update(EventRequest $request, int $id): JsonResponse
     {
+        $event = Event::find($id);
+        if ($event == null || !$event) {
+            $this->validationRequest('Event id does not exist', 404);
+        }
+        $data = $request->validated();
+        if ($request->hasFile('image')) {
+            $event->image != null && Storage::delete($event->image);
+            $data['image'] = $request->file('image')->store('events');
+        }
+
+        $event->update($data);
+        return $this->apiResponse(new EventResource($event), 'Event updated successfully', 200);
     }
 
     public function delete(int $id): JsonResponse
     {
-        if (!Gate::allows('is-admin')) {
-            $this->validationRequest('This action is not allowed.', 403);
-        }
-        
         $event = Event::find($id);
 
         if ($event == null) {
@@ -41,7 +51,7 @@ class EventController extends Controller
 
         $event->delete();
 
-        return response()->json(['data' => true])->setStatusCode(200);
+        return $this->apiResponse(true, 'Event deleted successfully', 200);;
     }
 
     public function getAll(): ResourceCollection

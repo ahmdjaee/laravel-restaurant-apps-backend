@@ -6,15 +6,13 @@ use App\Http\Requests\MenuRequest;
 use App\Http\Resources\MenuCollection;
 use App\Http\Resources\MenuResource;
 use App\Models\Menu;
-use App\Utils\Trait\ValidationRequest;
+use App\Utils\Trait\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller
 {
-    use ValidationRequest;
+    use ApiResponse;
     public function create(MenuRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -28,10 +26,10 @@ class MenuController extends Controller
             'image' => $request->file('image')->store('menus'),
         ]);
 
-        return (new MenuResource($menu))->response()->setStatusCode(201);
+        return $this->apiResponse(new MenuResource($menu), 'Menu created successfully', 201);
     }
 
-    public function update(int $id, MenuRequest $request): MenuResource
+    public function update(int $id, MenuRequest $request): JsonResponse
     {
         $menu = Menu::find($id);
         if ($menu == null || !$menu) {
@@ -47,7 +45,7 @@ class MenuController extends Controller
             ]);
         }
 
-        return new MenuResource($menu);
+        return $this->apiResponse(new MenuResource($menu), 'Menu updated successfully', 200);;
     }
 
     public function getAll(): MenuCollection
@@ -57,7 +55,7 @@ class MenuController extends Controller
     }
 
 
-    public function delete(int $id): Response
+    public function delete(int $id): JsonResponse
     {
         $menu = Menu::find($id);
         if ($menu == null || !$menu) {
@@ -66,7 +64,7 @@ class MenuController extends Controller
 
         $menu->delete();
 
-        return response(['data' => true])->setStatusCode(200);
+        return $this->apiResponse(true, 'Menu deleted successfully', 200);
     }
 
     public function get(int $id): MenuResource

@@ -6,7 +6,7 @@ use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Utils\Trait\ValidationRequest;
+use App\Utils\Trait\ApiResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Midtrans\Config;
@@ -14,7 +14,7 @@ use Midtrans\Snap;
 
 class OrderController extends Controller
 {
-    use ValidationRequest;
+    use ApiResponse;
     public function order(OrderRequest $request)
     {
         $data = $request->validated();

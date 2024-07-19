@@ -16,16 +16,11 @@ class MenuController extends Controller
     public function create(MenuRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $request->validate(['image' => ['required', 'image', 'max:5120'],]);
 
-        $menu = Menu::create([
-            'name' => $data['name'],
-            'category_id' => $data['category_id'],
-            'price' => $data['price'],
-            'description' => $data['description'],
-            'stock' => $data['stock'],
-            'image' => $request->file('image')->store('menus'),
-        ]);
+        $data['image'] = $request->file('image')->store('menus');
 
+        $menu = Menu::create($data);
         return $this->apiResponse(new MenuResource($menu), 'Menu created successfully', 201);
     }
 
@@ -36,15 +31,14 @@ class MenuController extends Controller
             $this->validationRequest('Menu id does not exist', 404);
         }
         $data = $request->validated();
-        $menu->update($data);
-
+        
         if ($request->hasFile('image')) {
+            $request->validate(['image' => ['image', 'max:5120']]);
             $menu->image != null && Storage::delete($menu->image);
-            $menu->update([
-                'image' => $request->file('image')->store('menus'),
-            ]);
+            $data['image'] = $request->file('image')->store('menus');
         }
-
+        
+        $menu->update($data);
         return $this->apiResponse(new MenuResource($menu), 'Menu updated successfully', 200);;
     }
 

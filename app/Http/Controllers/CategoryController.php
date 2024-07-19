@@ -13,7 +13,7 @@ class CategoryController extends Controller
 {
     use ApiResponse;
 
-    public function create(Request $request): Response
+    public function create(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:100', 'unique:categories,name']
@@ -26,19 +26,19 @@ class CategoryController extends Controller
         }
 
         $data = $validator->validate();
+        $category = Category::create($data);
 
-        $category = new Category($data);
-        $category->save();
-
-        return response([
-            'data' => [
+        return $this->apiResponse(
+            [
                 'id' => $category->id,
                 'name' => $category->name
-            ]
-        ], 201);
+            ],
+            'Category created successfully',
+            201
+        );
     }
 
-    public function update(int $id, Request $request): Response
+    public function update(int $id, Request $request): JsonResponse
     {
         $category = Category::find($id);
         if ($category == null) {
@@ -58,22 +58,19 @@ class CategoryController extends Controller
         $data = $validator->validate();
         $category->update($data);
 
-        return response([
-            'data' => [
+        return $this->apiResponse(
+            [
                 'id' => $category->id,
                 'name' => $category->name
-            ]
-        ], 200);
+            ],
+            'Category created successfully',
+            200
+        );
     }
 
     public function getAll(): JsonResponse
     {
         $collection = Category::all(['id', 'name']);
-
-        if ($collection->count() < 1 || $collection == null) {
-            $this->validationRequest('No Records Found', 404);
-        }
-
         return response()->json(['data' => $collection])->setStatusCode(200);
     }
 
@@ -85,7 +82,7 @@ class CategoryController extends Controller
             $this->validationRequest('Category id does not exist', 404);
         }
 
-        $category->forceDelete();
+        $category->delete();
 
         return $this->apiResponse(true, 'Category deleted successfully', 200);;
     }

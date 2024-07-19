@@ -134,12 +134,16 @@ class UserController extends Controller
         return UserResource::collection($collection);
     }
 
-    public function delete(int $id) : JsonResponse
+    public function delete(int $id): JsonResponse
     {
         $user = User::find($id);
 
         if ($user == null || !$user) {
             $this->validationRequest('User id does not exist', 404);
+        }
+
+        if ($user->id == Auth::user()->id) {
+            $this->validationRequest('You cannot delete yourself', 400);
         }
 
         $user->delete();

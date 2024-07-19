@@ -30,7 +30,6 @@ class MenuRequest extends FormRequest
             'price' => ['required', 'numeric'],
             'description' => ['required'],
             'stock' => ['required', 'numeric'],
-            'image' => ['required', 'image', 'max:4096'],
         ];
     }
 

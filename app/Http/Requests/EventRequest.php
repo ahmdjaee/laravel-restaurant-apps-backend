@@ -31,7 +31,6 @@ class EventRequest extends FormRequest
             'active' => ['nullable', 'boolean'],
             'event_start' => ['required', 'date'],
             'event_end' => ['required', 'date'],
-            'image' => ['required', 'image'],
             'type' => [
                 'required', 'string',
                 Rule::enum(TypeEvent::class)

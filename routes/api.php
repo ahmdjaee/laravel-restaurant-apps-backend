@@ -91,12 +91,13 @@ Route::middleware([ApiAuthMiddleware::class, EnsureUserIsAdmin::class])->group(f
 
     Route::controller(MenuController::class)->group(function () {
         Route::post('/admin/menus', 'create');
-        Route::put('/admin/menus/{id}', 'update');
+        Route::post('/admin/menus/{id}', 'update');
         Route::delete('/admin/menus/{id}', 'delete');
     });
 
     Route::controller(EventController::class)->group(function () {
         Route::post('/admin/events', 'create');
+        Route::post('/admin/events/{id}', 'update');
         Route::delete('/admin/events/{id}', 'delete');
     });
 

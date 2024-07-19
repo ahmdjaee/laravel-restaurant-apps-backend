@@ -17,10 +17,12 @@ class EventController extends Controller
     public function create(EventRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $request->validate([
+            'image' => ['required', 'image', 'max:5120']
+        ]);
 
-        $event = new Event($data);
-        $event->image = $request->file('image')->store('events');
-        $event->save();
+        $data['image'] = $request->file('image')->store('events');
+        $event = Event::create($data);
 
         return $this->apiResponse(new EventResource($event), 'Event created successfully', 201);
     }
@@ -28,11 +30,15 @@ class EventController extends Controller
     public function update(EventRequest $request, int $id): JsonResponse
     {
         $event = Event::find($id);
-        if ($event == null || !$event) {
+        if (!$event) {
             $this->validationRequest('Event id does not exist', 404);
         }
+
         $data = $request->validated();
         if ($request->hasFile('image')) {
+            $request->validate([
+                'image' => ['required', 'image', 'max:5120']
+            ]);
             $event->image != null && Storage::delete($event->image);
             $data['image'] = $request->file('image')->store('events');
         }

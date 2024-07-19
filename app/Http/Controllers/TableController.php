@@ -30,7 +30,6 @@ class TableController extends Controller
     public function getAll(Request $request): JsonResource
     {
         $collection = new Table();
-
         $status = $request->query('status', null);
 
         if ($status) {
@@ -38,11 +37,6 @@ class TableController extends Controller
         }
 
         $collection = $collection->get();
-
-        if ($collection->count() < 1 || $collection == null) {
-            $this->validationRequest('No Records Found', 404);
-        }
-
         return TableResource::collection($collection);
     }
 

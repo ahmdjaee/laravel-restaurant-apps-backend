@@ -31,7 +31,7 @@ class OrderRequest extends FormRequest
 
             // orders
             'reservation_id' => ['required', 'numeric'],
-            'status' => ['required', Rule::enum(StatusOrder::class)
+            'status' => ['nullable', Rule::enum(StatusOrder::class)
                 ->only([
                     StatusOrder::new, StatusOrder::checkout, StatusOrder::paid, StatusOrder::failed,  StatusOrder::completed
                 ])],

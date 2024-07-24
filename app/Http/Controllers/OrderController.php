@@ -6,7 +6,12 @@ use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Reservation;
+use App\Utils\Enum\StatusOrder;
+use App\Utils\Enum\StatusReservation;
 use App\Utils\Trait\ApiResponse;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Midtrans\Config;
@@ -25,14 +30,9 @@ class OrderController extends Controller
         Config::$isSanitized = true;
         Config::$is3ds = true;
 
-        // $order = Order::firstOrCreate(
-        //     ['user_id' => $user->id],
-        //     $data
-        // );
-
-        $order = new Order($data);
-        $order->user_id = $user->id;
-        $order->save();
+        $data['user_id'] = $user->id;
+        $data['status'] = 'new';
+        $order = Order::create($data);
 
         $items = array_map(function ($item) use ($order) {
             return [
@@ -62,7 +62,20 @@ class OrderController extends Controller
             $order->token = $snapToken;
         });
 
-        return new OrderResource($order);
+        return $this->apiResponse(new OrderResource($order), 'Order created successfully', 201);
+    }
+
+    public function success(string $id)
+    {
+        try {
+            //code...
+            $order = Order::find($id);
+            DB::transaction(function () use ($order) {
+                Reservation::query()->update(['status' => StatusReservation::confirmed]);
+                $order->update(['status' => StatusOrder::paid]);
+            });
+        } catch (\Throwable) {
+        }
     }
 
     public function getAll()
@@ -70,17 +83,27 @@ class OrderController extends Controller
         $user = Auth::user();
 
         $orders = Order::where('user_id', $user->id)->get();
-
-        // $orders = Order::join('reservations', 'orders.reservation_id', '=', 'reservations.id')
-        //     ->join('users', 'reservations.user_id', '=', 'users.id')
-        //     ->where('reservations.user_id', $user->id)
-        //     ->select('orders.*')
-        //     ->get();
-
-        if ($orders->count() == 0) {
-            $this->validationRequest('No Records Found', 404);
-        }
-
         return OrderResource::collection($orders);
+    }
+
+    public function getAllAdmin(Request $request)
+    {
+        $perPage = $request->query('per_page', 10);
+        $page = $request->query('page', 1);
+
+        $collection = Order::query()->with('user')->where(function (Builder $builder) use ($request) {
+            $search = $request->query('search', null);
+
+            if ($search) {
+                $builder->orWhere('id', 'like', "%{$search}%");
+                $builder->orWhereHas('user', function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%");
+                });
+            }
+        });
+
+
+        $collection = $collection->paginate(perPage: $perPage, page: $page)->onEachSide(1)->withQueryString();
+        return OrderResource::collection($collection);
     }
 }

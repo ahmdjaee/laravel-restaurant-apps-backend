@@ -6,7 +6,7 @@ use App\Models\Category;
 use App\Utils\Trait\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
@@ -16,22 +16,24 @@ class CategoryController extends Controller
     public function create(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'max:100', 'unique:categories,name']
+            'name' => ['required', 'max:100', 'unique:categories,name'],
+            'image' => ['required', 'image', 'max:5120']
         ]);
 
         if ($validator->fails()) {
-            return response([
-                'errors' => $validator->errors(),
-            ], 400);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
         $data = $validator->validate();
+        $data['image'] = $request->file('image')->store('categories');
         $category = Category::create($data);
 
         return $this->apiResponse(
             [
                 'id' => $category->id,
-                'name' => $category->name
+                'name' => $category->name,
+                'image' => url()->route('image', ['path' => $category->image, 'w' => 300, 'h' => 300, 'fit' => 'crop']),
+                'image_large' => url()->route('image', ['path' => $category->image, 'w' => 800, 'h' => 800, 'fit' => 'crop']),
             ],
             'Category created successfully',
             201
@@ -50,28 +52,41 @@ class CategoryController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response([
-                'errors' => $validator->errors(),
-            ], 400);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
         $data = $validator->validate();
+        if ($request->hasFile('image')) {
+            $request->validate(['image' => ['image', 'max:5120']]);
+            $category->image != null && Storage::delete($category->image);
+            $data['image'] = $request->file('image')->store('categories');
+        }
         $category->update($data);
 
         return $this->apiResponse(
             [
                 'id' => $category->id,
-                'name' => $category->name
+                'name' => $category->name,
+                'image' => url()->route('image', ['path' => $category->image, 'w' => 300, 'h' => 300, 'fit' => 'crop']),
+                'image_large' => url()->route('image', ['path' => $category->image, 'w' => 800, 'h' => 800, 'fit' => 'crop']),
             ],
-            'Category created successfully',
+            'Category updated successfully',
             200
         );
     }
 
     public function getAll(): JsonResponse
     {
-        $collection = Category::all(['id', 'name']);
-        return response()->json(['data' => $collection])->setStatusCode(200);
+        $collection = Category::all(['id', 'name', 'image']);
+        $data = $collection->map(function ($category) {
+            return [
+                'id' => $category->id,
+                'name' => $category->name,
+                'image' => url()->route('image', ['path' => $category->image, 'w' => 300, 'h' => 300, 'fit' => 'crop']),
+                'image_large' => url()->route('image', ['path' => $category->image, 'w' => 800, 'h' => 800, 'fit' => 'crop']),
+            ];
+        });
+        return $this->apiResponse($data);;
     }
 
     public function delete(int $id): JsonResponse
@@ -83,7 +98,6 @@ class CategoryController extends Controller
         }
 
         $category->delete();
-
         return $this->apiResponse(true, 'Category deleted successfully', 200);;
     }
 
@@ -95,6 +109,11 @@ class CategoryController extends Controller
             $this->validationRequest('Category id does not exist', 404);
         }
 
-        return response()->json(['data' => $category])->setStatusCode(200);
+        return response()->json(['data' => [
+            'id' => $category->id,
+            'name' => $category->name,
+            'image' => url()->route('image', ['path' => $category->image, 'w' => 300, 'h' => 300, 'fit' => 'crop']),
+            'image_large' => url()->route('image', ['path' => $category->image, 'w' => 800, 'h' => 800, 'fit' => 'crop']),
+        ]])->setStatusCode(200);
     }
 }

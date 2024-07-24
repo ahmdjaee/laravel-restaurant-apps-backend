@@ -10,10 +10,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class   ReservationController extends Controller
+class ReservationController extends Controller
 {
     use ApiResponse;
-    public function reserve(ReservationRequest $request): ReservationResource
+    public function reserve(ReservationRequest $request): JsonResponse
     {
         $user = Auth::user();
         $data = $request->validated();
@@ -22,26 +22,25 @@ class   ReservationController extends Controller
             $this->validationRequest("Complete the order or cancel the reservation to make another reservation.", 400);
         }
 
-        $reservation = new Reservation($data);
-        $reservation->user_id = $user->id;
-        $reservation->save();
+        $data['user_id'] = $user->id;
+        $reservation = Reservation::create($data);
 
-        return new ReservationResource($reservation);
+        return $this->apiResponse(new ReservationResource($reservation), 'Reservation created successfully', 201);;
     }
 
-    public function update(int $id, ReservationRequest $request): ReservationResource
-    {
-        $data = $request->validated();
-        $reservation = Reservation::find($id);
+        public function update(int $id, ReservationRequest $request): JsonResponse
+        {
+            $data = $request->validated();
+            $reservation = Reservation::find($id);
 
-        if (!$reservation) {
-            $this->validationRequest('Reservation id does not exist', 404);
+            if (!$reservation) {
+                $this->validationRequest('Reservation id does not exist', 404);
+            }
+
+            $reservation->update($data);
+
+            return $this->apiResponse(new ReservationResource($reservation), 'Reservation updated successfully', 200);;
         }
-
-        $reservation->update($data);
-
-        return new ReservationResource($reservation);
-    }
 
     public function cancel(int $id): JsonResponse
     {
@@ -51,19 +50,15 @@ class   ReservationController extends Controller
             $this->validationRequest('Reservation id does not exist', 404);
         }
 
-        $reservation->forceDelete();
+        $reservation->delete();
 
-        return response()->json(['data' => true])->setStatusCode(200);
+        return $this->apiResponse(true, 'Reservation canceled successfully', 200);
     }
 
     public function get(): ReservationResource
     {
         $user = Auth::user();
         $reservation = Reservation::where('user_id', $user->id)->where('status', 'pending')->first();
-
-        if (!$reservation) {
-            $this->validationRequest('No Records Found', 404);
-        }
 
         return new ReservationResource($reservation);
     }
@@ -81,6 +76,12 @@ class   ReservationController extends Controller
             $reservations = $reservations->get();
         }
 
+        return (ReservationResource::collection($reservations))->response();
+    }
+
+    public function getAllAdmin(): JsonResponse
+    {
+        $reservations = Reservation::all();
         return (ReservationResource::collection($reservations))->response();
     }
 }

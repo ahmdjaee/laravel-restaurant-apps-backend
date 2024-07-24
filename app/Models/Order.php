@@ -33,4 +33,9 @@ class Order extends Model
     {
         return $this->belongsTo(Reservation::class, 'reservation_id');
     }
+
+    public function user() : BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

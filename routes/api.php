@@ -78,6 +78,7 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
     Route::controller(OrderController::class)->group(function () {
         Route::get('/orders', 'getAll');
         Route::post('/orders', 'order');
+        Route::post('/orders/{id}/success', 'success');
     });
 });
 
@@ -110,7 +111,15 @@ Route::middleware([ApiAuthMiddleware::class, EnsureUserIsAdmin::class])->group(f
 
     Route::controller(CategoryController::class)->group(function () {
         Route::post('/admin/categories', 'create');
-        Route::put('/admin/categories/{id}', 'update')->where('id', '[0-9]+');
+        Route::post('/admin/categories/{id}', 'update')->where('id', '[0-9]+');
         Route::delete('/admin/categories/{id}', 'delete')->where('id', '[0-9]+');
+    });
+
+    Route::controller(OrderController::class)->group(function () {
+        Route::get('/admin/orders', 'getAllAdmin');
+    });
+
+    Route::controller(ReservationController::class)->group(function () {
+        Route::get('/admin/reservations', 'getAllAdmin');
     });
 });

@@ -76,6 +76,7 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
     });
 
     Route::controller(OrderController::class)->group(function () {
+        Route::get('/orders/{id}', 'get');
         Route::get('/orders', 'getAll');
         Route::post('/orders', 'order');
         Route::post('/orders/{id}/success', 'success');

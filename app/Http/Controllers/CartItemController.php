@@ -74,7 +74,7 @@ class CartItemController extends Controller
 
         $cartItem->update(['quantity' => $data['quantity']]);
 
-        return (new CartItemResource($cartItem))->response()->setStatusCode(200);
+        return $this->apiResponse(new CartItemResource($cartItem), 'Cart Item updated successfully', 200);
     }
 
 
@@ -92,13 +92,17 @@ class CartItemController extends Controller
 
         $cartItem->forceDelete();
 
-        return response(['data' => true])->setStatusCode(200);
+        return $this->apiResponse(new CartItemResource($cartItem), 'Cart Item deleted successfully', 200);
     }
 
-    public function getAll() : ResourceCollection
+    public function getAll(): ResourceCollection
     {
         $user = Auth::user();
 
+        if (!$user->cart) {
+            return CartItemResource::collection([]);
+        }
+        
         // Subquery untuk menghitung total_quantity
         $totalQuantity = CartItem::where('cart_id', $user->cart->id)
             ->select(DB::raw('SUM(quantity)'))
@@ -108,10 +112,6 @@ class CartItemController extends Controller
         $cartItems = CartItem::where('cart_id', $user->cart->id)
             ->select('*', DB::raw($totalQuantity . ' as total_quantity'))
             ->get();
-
-        if ($cartItems->isEmpty()) {
-            $this->validationRequest('No Records Found', 404);
-        }
 
         return CartItemResource::collection($cartItems);
     }

@@ -109,9 +109,7 @@ class UserController extends Controller
 
         $user->save();
 
-        return response()->json([
-            'data' => true
-        ], 200);
+        return $this->apiResponse(new UserResource($user), 'User logged out successfully', 200);
     }
 
     public function getAll(Request $request): ResourceCollection
@@ -128,7 +126,6 @@ class UserController extends Controller
             }
         });
 
-        /** @var User $collection */
         $collection = $collection->paginate(perPage: $perPage, page: $page)->onEachSide(1)->withQueryString();
 
         return UserResource::collection($collection);

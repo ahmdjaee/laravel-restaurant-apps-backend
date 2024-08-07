@@ -36,7 +36,7 @@ class TableController extends Controller
             $collection = $collection->where('status', $status);
         }
 
-        $collection = $collection->get();
+        $collection = $collection->orderBy('no', 'asc')->get();
         return TableResource::collection($collection);
     }
 

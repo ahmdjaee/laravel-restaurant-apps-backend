@@ -12,6 +12,7 @@ use App\Utils\Enum\StatusReservation;
 use App\Utils\Trait\ApiResponse;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Midtrans\Config;
@@ -78,7 +79,12 @@ class OrderController extends Controller
         }
     }
 
-    public function getAll()
+    public function get(int $id): OrderResource
+    {
+        $order = Order::find($id);
+        return new OrderResource($order);
+    }
+    public function getAll(): ResourceCollection
     {
         $user = Auth::user();
 
@@ -86,7 +92,7 @@ class OrderController extends Controller
         return OrderResource::collection($orders);
     }
 
-    public function getAllAdmin(Request $request)
+    public function getAllAdmin(Request $request): ResourceCollection
     {
         $perPage = $request->query('per_page', 10);
         $page = $request->query('page', 1);
@@ -96,6 +102,8 @@ class OrderController extends Controller
 
             if ($search) {
                 $builder->orWhere('id', 'like', "%{$search}%");
+                $builder->orWhere('status', 'like', "%{$search}%");
+
                 $builder->orWhereHas('user', function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%");
                 });
@@ -104,6 +112,7 @@ class OrderController extends Controller
 
 
         $collection = $collection->paginate(perPage: $perPage, page: $page)->onEachSide(1)->withQueryString();
+
         return OrderResource::collection($collection);
     }
 }

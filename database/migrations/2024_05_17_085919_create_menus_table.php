@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name', 100)->nullable(false);
             $table->unsignedBigInteger('category_id')->nullable(false);
-            $table->bigInteger('price')->nullable(false);
+            $table->bigInteger('price')->unsigned()->nullable(false);
             $table->text('description')->nullable();
-            $table->integer('stock')->nullable(false);
+            $table->string('tags', 255)->nullable();
+            $table->boolean('active')->nullable(false)->default(true);
+            $table->integer('stock')->unsigned()->nullable(false);
             $table->string('image', 255)->nullable(false);
             $table->timestamps();
 

@@ -38,7 +38,7 @@ class UserController extends Controller
 
         $user->save();
 
-        return $this->apiResponse(new UserResource($user), 'User registered successfully', 201);;
+        return $this->apiResponse(new UserResource($user), 'Register has been successful', 201);;
     }
 
     public function login(UserLoginRequest $request): JsonResponse
@@ -54,7 +54,7 @@ class UserController extends Controller
         $user->token = Str::uuid()->toString();
         $user->save();
 
-        return (new UserResource($user))->response();
+        return $this->apiResponse(new UserResource($user), 'Login has been successful', 200);
     }
     public function loginAdmin(UserLoginRequest $request): JsonResponse
     {

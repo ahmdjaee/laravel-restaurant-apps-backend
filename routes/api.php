@@ -69,7 +69,6 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
 
     Route::controller(CartItemController::class)->group(function () {
         Route::get('/carts', 'getAll');
-        Route::get('/carts/{id}', 'get');
         Route::post('/carts', 'store');
         Route::delete('/carts/{id}', 'delete');
         Route::patch('/carts/{id}', 'update');

@@ -21,6 +21,8 @@ class Menu extends Model
         'price',
         'stock',
         'image',
+        'tags',
+        'active',
     ];
     public function category() 
     {

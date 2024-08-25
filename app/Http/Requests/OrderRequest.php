@@ -26,16 +26,16 @@ class OrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // order items
             'items' => ['required'], // array
-
-            // orders
             'reservation_id' => ['required', 'numeric'],
             'status' => ['nullable', Rule::enum(StatusOrder::class)
                 ->only([
-                    StatusOrder::new, StatusOrder::checkout, StatusOrder::paid, StatusOrder::failed,  StatusOrder::completed
+                    StatusOrder::new,
+                    StatusOrder::checkout,
+                    StatusOrder::paid,
+                    StatusOrder::failed,
+                    StatusOrder::completed
                 ])],
-            'total_payment' => ['required', 'numeric']
         ];
     }
 

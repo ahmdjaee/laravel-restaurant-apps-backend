@@ -1,6 +1,8 @@
 -- Active: 1711665667615@@127.0.0.1@3306@reservation_restaurant
 CREATE DATABASE reservation_restaurant;
 
+DROP DATABASE reservation_restaurant;
+
 USE reservation_restaurant;
 
 SELECT

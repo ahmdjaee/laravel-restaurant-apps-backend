@@ -48,7 +48,7 @@ class CategoryController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'max:100', 'unique:categories,name']
+            'name' => ['required', 'max:100']
         ]);
 
         if ($validator->fails()) {

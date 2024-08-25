@@ -16,17 +16,14 @@ class CartItemResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'cart_id' => $this->cart_id,
             'quantity' => $this->quantity,
-            'total_quantity' => $this->total_quantity,
-            'total_price' => $this->quantity * $this->menu->price,
             'notes' => $this->notes,
             'menu' => [
                 'id' => $this->menu->id,
                 'name' => $this->menu->name,
                 'price' => $this->menu->price,
                 'image' => url()->route('image', ['path' => $this->menu->image, 'w' => 300, 'h' => 300, 'fit' => 'crop']),
-                'category' => $this->menu->category_id,
+                'category' => $this->menu->category,
                 'description' => $this->menu->description,
             ],
         ];

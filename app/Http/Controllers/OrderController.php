@@ -32,7 +32,6 @@ class OrderController extends Controller
         Config::$is3ds = true;
 
         $data['user_id'] = $user->id;
-        $data['status'] = 'new';
         $order = Order::create($data);
 
         $items = array_map(function ($item) use ($order) {
@@ -44,14 +43,21 @@ class OrderController extends Controller
             ];
         }, $data['items']);
 
-        DB::transaction(function () use ($order, $items, $user) {
-            OrderItem::where('order_id', $order->id)->delete();
+        $total_payment = 0;
+
+        foreach ($items as $item) {
+            $total_payment += $item['price'] * $item['quantity'];
+        }
+
+        DB::transaction(function () use ($user, $items, $total_payment, $order) {
+
+            $order->update(['total_payment' => $total_payment]);
             OrderItem::insert($items);
 
             $params = [
                 'transaction_details' => [
                     'order_id' => $order->id,
-                    'gross_amount' => $order->total_payment
+                    'gross_amount' => $total_payment
                 ],
                 'customer_details' => [
                     'first_name' => $user->name,
@@ -62,24 +68,23 @@ class OrderController extends Controller
             $snapToken = Snap::getSnapToken($params);
             $order->token = $snapToken;
         });
-
         return $this->apiResponse(new OrderResource($order), 'Order created successfully', 201);
     }
 
-    public function success(string $id)
-    {
-        try {
-            //code...
-            $order = Order::find($id);
-            DB::transaction(function () use ($order) {
-                Reservation::query()->update(['status' => StatusReservation::confirmed]);
-                $order->update(['status' => StatusOrder::paid]);
-            });
-        } catch (\Throwable) {
-        }
-    }
+    // public function success(string $id)
+    // {
+    //     try {
+    //         //code...
+    //         $order = Order::find($id);
+    //         DB::transaction(function () use ($order) {
+    //             Reservation::query()->update(['status' => StatusReservation::confirmed]);
+    //             $order->update(['status' => StatusOrder::paid]);
+    //         });
+    //     } catch (\Throwable) {
+    //     }
+    // }
 
-    public function get(int $id): OrderResource
+    public function get(string $id): OrderResource
     {
         $order = Order::find($id);
         return new OrderResource($order);

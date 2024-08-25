@@ -19,8 +19,9 @@ class MenuController extends Controller
         $request->validate(['image' => ['required', 'image', 'max:5120'],]);
 
         $data['image'] = $request->file('image')->store('menus');
-
+        $data['tags'] = implode(',', $data['tags']);
         $menu = Menu::create($data);
+        
         return $this->apiResponse(new MenuResource($menu), 'Menu created successfully', 201);
     }
 
@@ -31,13 +32,13 @@ class MenuController extends Controller
             $this->validationRequest('Menu id does not exist', 404);
         }
         $data = $request->validated();
-        
+
         if ($request->hasFile('image')) {
             $request->validate(['image' => ['image', 'max:5120']]);
             $menu->image != null && Storage::delete($menu->image);
             $data['image'] = $request->file('image')->store('menus');
         }
-        
+
         $menu->update($data);
         return $this->apiResponse(new MenuResource($menu), 'Menu updated successfully', 200);;
     }

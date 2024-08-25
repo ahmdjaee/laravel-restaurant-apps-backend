@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('menu_id')->nullable(false);
-            $table->unsignedBigInteger('order_id')->nullable(false);
+            $table->foreignUlid('order_id')->nullable(false);
             $table->integer('quantity')->nullable(false);
             $table->bigInteger('price')->nullable(false);
             $table->timestamps();

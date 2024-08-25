@@ -20,6 +20,8 @@ class MenuResource extends JsonResource
             'description' => $this->description,
             'price' => $this->price,
             'stock' => $this->stock,
+            'tags' => $this->tags,
+            'active' => $this->active >= 1 ? true : false,
             'image' => url()->route('image', ['path' => $this->image, 'w' => 300, 'h' => 300, 'fit' => 'crop']),
             'image_large' => url()->route('image', ['path' => $this->image, 'w' => 800, 'h' => 800, 'fit' => 'crop']),
             'category' => $this->category,

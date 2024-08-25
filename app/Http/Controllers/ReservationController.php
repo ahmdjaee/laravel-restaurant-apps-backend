@@ -20,15 +20,22 @@ class ReservationController extends Controller
         $user = Auth::user();
         $data = $request->validated();
 
-        if (Reservation::where('user_id', $user->id)->where('status', 'pending')->count() > 0) {
-            $this->validationRequest("Complete the order or cancel the reservation to make another reservation.", 400);
-        }
-
         $data['user_id'] = $user->id;
         $data['status'] = 'pending';
-        $reservation = Reservation::create($data);
 
-        return $this->apiResponse(new ReservationResource($reservation), 'Reservation created successfully', 201);;
+        $reservation = Reservation::where('user_id', $user->id)->where('status', 'pending')->first();
+
+        if ($reservation) {
+            $reservation->update($data);
+        } else {
+            $reservation = Reservation::create($data);
+        }
+
+        return $this->apiResponse(
+            new ReservationResource($reservation),
+            'Reservation created successfully',
+            201
+        );;
     }
 
     public function update(int $id, ReservationRequest $request): JsonResponse

@@ -14,9 +14,9 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         Category::insert([
-            ['name' => 'Food'],
-            ['name' => 'Beverage'],
-            ['name' => 'Dessert'],
+            ['name' => 'Food', 'image' => 'https://cdn-icons-png.flaticon.com/512/147/147144.png'],
+            ['name' => 'Beverage', 'image' => 'https://cdn-icons-png.flaticon.com/512/147/147144.png'],
+            ['name' => 'Dessert', 'image' => 'https://cdn-icons-png.flaticon.com/512/147/147144.png'],
         ]);
     }
 }

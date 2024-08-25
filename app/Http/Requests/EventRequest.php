@@ -15,7 +15,7 @@ class EventRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->is_admin;;
+        return $this->user()->is_admin;
     }
 
     /**

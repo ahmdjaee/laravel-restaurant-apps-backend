@@ -9,7 +9,6 @@ use App\Models\CartItem;
 use App\Utils\Trait\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -47,7 +46,7 @@ class CartItemController extends Controller
             $cartItem->save();
         }
 
-        return $this->apiResponse(new CartItemResource($cartItem), 'Item added successfully', 201);;
+        return $this->apiResponse(new CartItemResource($cartItem), 'Successfully added item to cart', 201);;
     }
 
     public function update(int $id, Request $request)
@@ -95,24 +94,37 @@ class CartItemController extends Controller
         return $this->apiResponse(new CartItemResource($cartItem), 'Cart Item deleted successfully', 200);
     }
 
-    public function getAll(): ResourceCollection
+    public function getAll(): JsonResponse
     {
         $user = Auth::user();
 
-        if (!$user->cart) {
-            return CartItemResource::collection([]);
+        if (!$user->cart || CartItem::where('cart_id', $user->cart->id)->count() == 0) {
+            return $this->apiResponse([], 'Cart is empty', 200);
         }
-        
-        // Subquery untuk menghitung total_quantity
-        $totalQuantity = CartItem::where('cart_id', $user->cart->id)
-            ->select(DB::raw('SUM(quantity)'))
-            ->pluck('SUM(quantity)')->first();
 
-        // Query utama untuk mendapatkan data cart items dengan kolom tambahan total_quantity
-        $cartItems = CartItem::where('cart_id', $user->cart->id)
-            ->select('*', DB::raw($totalQuantity . ' as total_quantity'))
+        // Gabungkan penghitungan total quantity dan total price dalam satu query
+        $totalData = CartItem::query()
+            ->join('menus', 'menus.id', '=', 'cart_items.menu_id')
+            ->where('cart_items.cart_id', '=', $user->cart->id)
+            ->select(
+                DB::raw('SUM(cart_items.quantity) as total_quantity'),
+                DB::raw('SUM(menus.price * cart_items.quantity) as total_price')
+            )
+            ->first();
+
+        $totalQuantity = $totalData->total_quantity;
+        $totalPrice = $totalData->total_price;
+
+        // Eager load menus untuk mengurangi query tambahan
+        $cartItems = CartItem::with('menu')
+            ->where('cart_id', $user->cart->id)
             ->get();
 
-        return CartItemResource::collection($cartItems);
+        return $this->apiResponse([
+            'id' => $user->cart->id,
+            'items' => CartItemResource::collection($cartItems),
+            'total_quantity' => $totalQuantity,
+            'total_price' => $totalPrice
+        ]);
     }
 }

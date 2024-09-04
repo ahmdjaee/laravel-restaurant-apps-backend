@@ -18,14 +18,7 @@ class CartItemResource extends JsonResource
             'id' => $this->id,
             'quantity' => $this->quantity,
             'notes' => $this->notes,
-            'menu' => [
-                'id' => $this->menu->id,
-                'name' => $this->menu->name,
-                'price' => $this->menu->price,
-                'image' => url()->route('image', ['path' => $this->menu->image, 'w' => 300, 'h' => 300, 'fit' => 'crop']),
-                'category' => $this->menu->category,
-                'description' => $this->menu->description,
-            ],
+            'menu' => new MenuResource($this->menu),
         ];
     }
 }

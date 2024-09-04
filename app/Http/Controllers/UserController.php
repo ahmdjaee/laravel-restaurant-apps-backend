@@ -8,6 +8,7 @@ use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Utils\Trait\ApiResponse;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +26,7 @@ class UserController extends Controller
     {
         $data = $request->validated();
 
-        if (User::query()->where('email', $data['email'])->count() > 0) {
+        if (User::query()->where('email', $data['email'])->exists()) {
             throw new HttpResponseException(response()->json([
                 'errors' => [
                     'email' => 'Email already exists'
@@ -33,10 +34,8 @@ class UserController extends Controller
             ], 400));
         }
 
-        $user = new User($data);
-        $user->password = Hash::make($data['password']);
-
-        $user->save();
+        $data['password'] = Hash::make($data['password']);
+        $user = User::create($data);
 
         return $this->apiResponse(new UserResource($user), 'Register has been successful', 201);;
     }
@@ -55,6 +54,31 @@ class UserController extends Controller
         $user->save();
 
         return $this->apiResponse(new UserResource($user), 'Login has been successful', 200);
+    }
+
+    public function create(UserRegisterRequest $request): JsonResponse
+    {
+
+        $data = $request->validated();
+
+        if (User::query()->where('email', $data['email'])->exists()) {
+            throw new HttpResponseException(response()->json([
+                'errors' => [
+                    'email' => 'Email already exists'
+                ]
+            ], 400));
+        }
+
+        $user = new User($data);
+        $user->password = Hash::make($data['password']);
+
+        if ($request->input('is_admin')) {
+            $user->is_admin = $request->input('is_admin');
+        }
+
+        $user->save();
+
+        return $this->apiResponse(new UserResource($user), 'Create user has been successful', 201);
     }
     public function loginAdmin(UserLoginRequest $request): JsonResponse
     {
@@ -77,12 +101,47 @@ class UserController extends Controller
     {
         $data = $request->validated();
 
-        /** @var User $user */
         $user = Auth::user();
-        $user->update($request->safe()->only(['name', 'email']));
+
+        $user->update($request->safe()->only(['name']));
+
+        if (isset($data['email']) && $user->email != $data['email']) {
+            $user->update(['email' => $data['email']]);
+        }
 
         if (isset($data['password'])) {
             $user->update(['password' => Hash::make($data['password'])]);
+        }
+
+        if ($request->hasFile('photo')) {
+            $user->photo != null && Storage::delete($user->photo);
+            $user->update([
+                'photo' => $request->file('photo')->store('users'),
+            ]);
+        }
+
+        return $this->apiResponse(new UserResource($user), 'User updated successfully', 200);
+    }
+
+    public function updateAdmin(UserUpdateRequest $request, int $id): JsonResponse
+    {
+        $data = $request->validated();
+
+        $user = User::find($id);
+
+        $user->update($request->safe()->only(['name']));
+
+        if (isset($data['email']) && $user->email != $data['email'] && $user->where('email', $data['email'])->doesntExist()) {
+            $user->update(['email' => $data['email']]);
+        }
+
+        if (isset($data['password'])) {
+            $user->update(['password' => Hash::make($data['password'])]);
+        }
+
+
+        if ($request->input('is_admin')) {
+            $user->update(['is_admin' => $request->input('is_admin')]);
         }
 
         if ($request->hasFile('photo')) {
@@ -103,7 +162,6 @@ class UserController extends Controller
 
     public function logout(): JsonResponse
     {
-        /** @var User $user */
         $user = Auth::user();
         $user->token = null;
 
@@ -116,17 +174,27 @@ class UserController extends Controller
     {
         $perPage = $request->query('per_page', 10);
         $page = $request->query('page', 1);
+        $search = $request->query('search', null);
+        $latest = $request->query('latest', null);
 
-        $collection = User::query()->where(function (Builder $builder) use ($request) {
-            $search = $request->query('search', null);
+        $query = User::query();
 
-            if ($search) {
-                $builder->orWhere('name', 'like', "%{$search}%");
-                $builder->orWhere('email', 'like', "%{$search}%");
-            }
-        });
+        if ($search) {
+            $query->where(function (Builder $builder) use ($search) {
+                $builder->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
 
-        $collection = $collection->paginate(perPage: $perPage, page: $page)->onEachSide(1)->withQueryString();
+        if ($latest) {
+            $query->where('is_admin', 0)
+                ->where('created_at', '>=', Carbon::now()->subDays(7))
+                ->orderBy('id', 'desc');
+        }
+
+        $collection = $query->paginate(perPage: $perPage, page: $page)
+            ->onEachSide(1)
+            ->withQueryString();
 
         return UserResource::collection($collection);
     }
@@ -146,5 +214,14 @@ class UserController extends Controller
         $user->delete();
 
         return $this->apiResponse(true, 'User deleted successfully', 200);
+    }
+
+    public function summary(): JsonResponse
+    {
+        $totalUser = User::query()->count();
+
+        return $this->apiResponse([
+            'total' => $totalUser
+        ]);
     }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MenuController;
@@ -49,6 +50,8 @@ Route::get('/img/{path}', [ImageController::class, 'show'])
     ->where('path', '.*')
     ->name('image');
 
+Route::post('/contact', [ContactController::class, 'send']);
+
 Route::middleware(ApiAuthMiddleware::class)->group(function () {
     Route::controller(UserController::class)->group(function () {
         Route::get('/users/current', 'current');
@@ -79,6 +82,7 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
         Route::get('/orders', 'getAll');
         Route::post('/orders', 'order');
         Route::post('/orders/{id}/success', 'success');
+        Route::delete('/orders/{id}', 'delete');
     });
 });
 
@@ -88,18 +92,23 @@ Route::middleware([ApiAuthMiddleware::class, EnsureUserIsAdmin::class])->group(f
     Route::controller(UserController::class)->group(function () {
         Route::get('/admin/users', 'getAll');
         Route::delete('/admin/users/{id}', 'delete');
+        Route::get('/admin/users/summary', 'summary');
+        Route::post('/admin/users/create', 'create');
+        Route::post('/admin/users/{id}/update', 'updateAdmin');
     });
 
     Route::controller(MenuController::class)->group(function () {
         Route::post('/admin/menus', 'create');
         Route::post('/admin/menus/{id}', 'update');
         Route::delete('/admin/menus/{id}', 'delete');
+        Route::get('/admin/menus/summary', 'summary');
     });
 
     Route::controller(EventController::class)->group(function () {
         Route::post('/admin/events', 'create');
         Route::post('/admin/events/{id}', 'update');
         Route::delete('/admin/events/{id}', 'delete');
+        Route::get('/admin/events/summary', 'summary');
     });
 
     Route::controller(TableController::class)->group(function () {
@@ -117,6 +126,7 @@ Route::middleware([ApiAuthMiddleware::class, EnsureUserIsAdmin::class])->group(f
 
     Route::controller(OrderController::class)->group(function () {
         Route::get('/admin/orders', 'getAllAdmin');
+        Route::get('/admin/orders/summary', 'summary');
     });
 
     Route::controller(ReservationController::class)->group(function () {

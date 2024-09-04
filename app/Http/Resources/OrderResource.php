@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,30 +17,14 @@ class OrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'items' => $this->order_items,
-            'user' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-                'email' => $this->user->email,
-            ],
-            'reservation' => [
-                'id' => $this->reservation->id,
-                'table' => [
-                    'id' => $this->reservation->table->id,
-                    'no' => $this->reservation->table->no,
-                    'status' => $this->reservation->table->status,
-                    'capacity' => $this->reservation->table->capacity
-                ],
-                'date' => $this->reservation->date,
-                'time' => $this->reservation->time,
-                'persons' => $this->reservation->persons,
-                'status' => $this->reservation->status,
-                'notes' => $this->reservation->notes
-            ],
+            'items' => OrderItemResource::collection(OrderItem::query()->where('order_id', $this->id)->get()),
+            'user' => new UserResource($this->user),
+            'reservation' => new ReservationResource($this->reservation),
             'status' => $this->status,
             'token' => $this->whenNotNull($this->token),
             'total_payment' => $this->total_payment,
             'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

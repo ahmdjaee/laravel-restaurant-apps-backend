@@ -19,7 +19,7 @@ class EventResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'image' => url()->route('image', ['path' => $this->image, 'w' => 300, 'h' => 300, 'fit' => 'crop']),
-            'image_large' => url()->route('image', ['path' => $this->image, 'w' => 800, 'h' => 800, 'fit' => 'crop']),
+            'image_large' => url()->route('image', ['path' => $this->image, 'fit' => 'crop']),
             'type' => $this->type,
             'active' => $this->whenNotNull($this->active == 1 ? true : false, true),
             'event_start' => $this->event_start,

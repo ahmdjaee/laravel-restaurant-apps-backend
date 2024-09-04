@@ -65,4 +65,10 @@ class EventController extends Controller
         $event = Event::all();
         return EventResource::collection($event);
     }
+
+    public function summary(): JsonResponse
+    {
+        $totalEvent = Event::count();
+        return $this->apiResponse(['total' => $totalEvent]);
+    }
 }

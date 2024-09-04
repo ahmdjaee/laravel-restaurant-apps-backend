@@ -10,7 +10,6 @@ use App\Utils\Trait\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CartItemController extends Controller
@@ -64,8 +63,7 @@ class CartItemController extends Controller
         $data = $validator->validate();
         $user = Auth::user();
 
-        $card = Cart::where('user_id', $user->id)->first();
-        $cartItem = CartItem::where('cart_id', $card->id)->find($id);
+        $cartItem = CartItem::where('cart_id', $user->cart->id)->find($id);
 
         if ($cartItem == null) {
             $this->validationRequest('Cart Item id does not exists', 404);
@@ -81,9 +79,7 @@ class CartItemController extends Controller
     {
         $user = Auth::user();
 
-        $card = Cart::where('user_id', $user->id)->first();
-
-        $cartItem = CartItem::where('cart_id', $card->id)->find($id);
+        $cartItem = CartItem::where('cart_id', $user->cart->id)->find($id);
 
         if ($cartItem == null) {
             $this->validationRequest('Cart Item id does not exists', 404);
@@ -98,18 +94,15 @@ class CartItemController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->cart || CartItem::where('cart_id', $user->cart->id)->count() == 0) {
+        if (!$user->cart) {
             return $this->apiResponse([], 'Cart is empty', 200);
         }
 
         // Gabungkan penghitungan total quantity dan total price dalam satu query
         $totalData = CartItem::query()
             ->join('menus', 'menus.id', '=', 'cart_items.menu_id')
-            ->where('cart_items.cart_id', '=', $user->cart->id)
-            ->select(
-                DB::raw('SUM(cart_items.quantity) as total_quantity'),
-                DB::raw('SUM(menus.price * cart_items.quantity) as total_price')
-            )
+            ->where('cart_items.cart_id', $user->cart->id)
+            ->selectRaw('SUM(cart_items.quantity) as total_quantity, SUM(menus.price * cart_items.quantity) as total_price')
             ->first();
 
         $totalQuantity = $totalData->total_quantity;

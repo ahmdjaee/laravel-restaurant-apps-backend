@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Utils\Trait\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -29,12 +30,7 @@ class CategoryController extends Controller
         $category = Category::create($data);
 
         return $this->apiResponse(
-            [
-                'id' => $category->id,
-                'name' => $category->name,
-                'image' => url()->route('image', ['path' => $category->image, 'w' => 300, 'h' => 300, 'fit' => 'crop']),
-                'image_large' => url()->route('image', ['path' => $category->image, 'w' => 800, 'h' => 800, 'fit' => 'crop']),
-            ],
+            new CategoryResource($category),
             'Category created successfully',
             201
         );
@@ -43,6 +39,7 @@ class CategoryController extends Controller
     public function update(int $id, Request $request): JsonResponse
     {
         $category = Category::find($id);
+
         if ($category == null) {
             $this->validationRequest('Category id does not exist', 404);
         }
@@ -56,20 +53,25 @@ class CategoryController extends Controller
         }
 
         $data = $validator->validate();
+
         if ($request->hasFile('image')) {
             $request->validate(['image' => ['image', 'max:5120']]);
             $category->image != null && Storage::delete($category->image);
             $data['image'] = $request->file('image')->store('categories');
         }
-        $category->update($data);
+
+        if ($category->name !== $request->input('name') && $category) {
+            return response()->json(['errors' => [
+                'name' => 'Category name already exist'
+            ]], 400);
+        }
+
+        if ($category->name !== $request->input('name')) {
+            $category->update($data);
+        }
 
         return $this->apiResponse(
-            [
-                'id' => $category->id,
-                'name' => $category->name,
-                'image' => url()->route('image', ['path' => $category->image, 'w' => 300, 'h' => 300, 'fit' => 'crop']),
-                'image_large' => url()->route('image', ['path' => $category->image, 'w' => 800, 'h' => 800, 'fit' => 'crop']),
-            ],
+            new CategoryResource($category),
             'Category updated successfully',
             200
         );
@@ -78,15 +80,8 @@ class CategoryController extends Controller
     public function getAll(): JsonResponse
     {
         $collection = Category::all(['id', 'name', 'image']);
-        $data = $collection->map(function ($category) {
-            return [
-                'id' => $category->id,
-                'name' => $category->name,
-                'image' => url()->route('image', ['path' => $category->image, 'w' => 300, 'h' => 300, 'fit' => 'crop']),
-                'image_large' => url()->route('image', ['path' => $category->image, 'w' => 800, 'h' => 800, 'fit' => 'crop']),
-            ];
-        });
-        return $this->apiResponse($data);;
+
+        return $this->apiResponse(CategoryResource::collection($collection));
     }
 
     public function delete(int $id): JsonResponse
@@ -109,11 +104,6 @@ class CategoryController extends Controller
             $this->validationRequest('Category id does not exist', 404);
         }
 
-        return response()->json(['data' => [
-            'id' => $category->id,
-            'name' => $category->name,
-            'image' => url()->route('image', ['path' => $category->image, 'w' => 300, 'h' => 300, 'fit' => 'crop']),
-            'image_large' => url()->route('image', ['path' => $category->image, 'w' => 800, 'h' => 800, 'fit' => 'crop']),
-        ]])->setStatusCode(200);
+        return $this->apiResponse(new CategoryResource($category));
     }
 }

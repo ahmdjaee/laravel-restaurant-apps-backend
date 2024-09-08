@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ContactController;
@@ -25,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::controller(UserController::class)->group(function () {
+Route::controller(AuthController::class)->group(function () {
     Route::post('/users/register', 'register');
     Route::post('/users/login', 'login');
     Route::post('/admin/login', 'loginAdmin');
@@ -52,8 +53,8 @@ Route::get('/img/{path}', [ImageController::class, 'show'])
 
 Route::post('/contact', [ContactController::class, 'send']);
 
-Route::middleware(ApiAuthMiddleware::class)->group(function () {
-    Route::controller(UserController::class)->group(function () {
+Route::middleware('auth')->group(function () {
+    Route::controller(AuthController::class)->group(function () {
         Route::get('/users/current', 'current');
         Route::delete('/users/logout', 'logout');
         Route::post('/users/update', 'update');
@@ -86,15 +87,14 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
     });
 });
 
-
 // Admin routes
-Route::middleware([ApiAuthMiddleware::class, EnsureUserIsAdmin::class])->group(function () {
+Route::middleware(['auth', EnsureUserIsAdmin::class])->group(function () {
     Route::controller(UserController::class)->group(function () {
         Route::get('/admin/users', 'getAll');
         Route::delete('/admin/users/{id}', 'delete');
         Route::get('/admin/users/summary', 'summary');
         Route::post('/admin/users/create', 'create');
-        Route::post('/admin/users/{id}/update', 'updateAdmin');
+        Route::post('/admin/users/{id}/update', 'update');
     });
 
     Route::controller(MenuController::class)->group(function () {

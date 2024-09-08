@@ -18,7 +18,7 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'token' =>  $this->whenNotNull($this->token),
+            // 'token' =>  $this->whenNotNull($this->token),
             'is_admin' =>  $this->when($this->is_admin, true),
             'photo' =>  $this->photo ? url()->route('image', ['path' => $this->photo, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
             'photo_medium' =>  $this->photo ? url()->route('image', ['path' => $this->photo, 'w' => 300, 'h' => 300, 'fit' => 'crop']) : null,

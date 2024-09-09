@@ -20,44 +20,32 @@ class CartItemController extends Controller
         $data = $request->validated();
         $user = Auth::user();
 
-        $cart = Cart::query()->where('user_id', '=', $user->id)->first();
+        // Make sure the cart already exists or create a new one if it doesn't.
+        $cart = $user->cart ?? $user->cart()->create(['user_id' => $user->id]);
 
-        if (!$cart) {
-            $cart = new Cart();
-            $cart->user_id = $user->id;
-            $cart->save();
-        }
+        // Check if the item is already in the cart?
+        $availableCartItem = $cart->cart_items()->where('menu_id', $data['menu_id'])->first();
 
-        $cart = $user->cart;
-
-        $cartItem = new CartItem($data);
-        $cartItem->cart_id = $cart->id;
-
-        // retrieve data if it already exists?
-        $availableCartItem = CartItem::where('cart_id', $cart->id)->where('menu_id', $data['menu_id'])->first();
-
-        if ($availableCartItem != null) {
-            $cartItem->id = $availableCartItem->id;
-            $cartItem->quantity = $availableCartItem->quantity + $data['quantity'];
-
-            $availableCartItem->update(['quantity' => $cartItem->quantity]);
+        if ($availableCartItem) {
+            $availableCartItem->update(['quantity' => $availableCartItem->quantity + $data['quantity']]);
+            $cartItem = $availableCartItem;
         } else {
-            $cartItem->save();
+            $cartItem = $cart->cart_items()->create($data);
         }
 
         return $this->apiResponse(new CartItemResource($cartItem), 'Successfully added item to cart', 201);;
     }
 
-    public function update(int $id, Request $request)
+    public function update(int $id, Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'quantity' => ['required', 'numeric'],
         ]);
 
         if ($validator->fails()) {
-            return response([
-                'errors' => $validator->errors(),
-            ], 400);
+            return response()->json([
+                'errors' => $validator->errors()
+            ]);
         }
 
         $data = $validator->validate();
@@ -75,7 +63,7 @@ class CartItemController extends Controller
     }
 
 
-    public function delete(int $id)
+    public function delete(int $id): JsonResponse
     {
         $user = Auth::user();
 
@@ -85,7 +73,7 @@ class CartItemController extends Controller
             $this->validationRequest('Cart Item id does not exists', 404);
         }
 
-        $cartItem->forceDelete();
+        $cartItem->delete();
 
         return $this->apiResponse(new CartItemResource($cartItem), 'Cart Item deleted successfully', 200);
     }
@@ -98,7 +86,7 @@ class CartItemController extends Controller
             return $this->apiResponse([], 'Cart is empty', 200);
         }
 
-        // Gabungkan penghitungan total quantity dan total price dalam satu query
+        // Combine total quantity and total price calculations in one query
         $totalData = CartItem::query()
             ->join('menus', 'menus.id', '=', 'cart_items.menu_id')
             ->where('cart_items.cart_id', $user->cart->id)
@@ -108,7 +96,6 @@ class CartItemController extends Controller
         $totalQuantity = $totalData->total_quantity;
         $totalPrice = $totalData->total_price;
 
-        // Eager load menus untuk mengurangi query tambahan
         $cartItems = CartItem::with('menu')
             ->where('cart_id', $user->cart->id)
             ->get();

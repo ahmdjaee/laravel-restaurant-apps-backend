@@ -14,13 +14,14 @@ use Illuminate\Support\Facades\Storage;
 class MenuController extends Controller
 {
     use ApiResponse;
+
     public function create(MenuRequest $request): JsonResponse
     {
         $data = $request->validated();
         $request->validate(['image' => ['required', 'image', 'max:5120'],]);
 
         $data['image'] = $request->file('image')->store('menus');
-        $data['tags'] = implode(',', $data['tags'] ?? []);
+        if (isset($data['tags'])) $data['tags'] = implode(',', $data['tags']);
         $menu = Menu::create($data);
 
         return $this->apiResponse(new MenuResource($menu), 'Menu created successfully', 201);
@@ -32,8 +33,10 @@ class MenuController extends Controller
         if ($menu == null || !$menu) {
             $this->validationRequest('Menu id does not exist', 404);
         }
+        
         $data = $request->validated();
-        $data['tags'] = implode(',', $data['tags'] ?? []);
+        if (isset($data['tags'])) $data['tags'] = implode(',', $data['tags']);
+        else $data['tags'] = null;
 
         if ($request->hasFile('image')) {
             $request->validate(['image' => ['image', 'max:5120']]);
@@ -44,17 +47,17 @@ class MenuController extends Controller
         $menu->update($data);
         return $this->apiResponse(new MenuResource($menu), 'Menu updated successfully', 200);;
     }
-    
+
     public function getAll(Request $request)
     {
         $tags = $request->query('tags', null);
-        
+
         $collection = Menu::query()->where(function (Builder $query) use ($tags) {
             if ($tags) {
                 $query->where('tags', 'like', "%$tags%");
             }
         })->get();
-        
+
         return MenuResource::collection($collection);
     }
 

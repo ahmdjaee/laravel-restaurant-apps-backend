@@ -11,7 +11,6 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\UserController;
-use App\Http\Middleware\ApiAuthMiddleware;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use Illuminate\Support\Facades\Route;
 
@@ -88,48 +87,49 @@ Route::middleware('auth')->group(function () {
 });
 
 // Admin routes
-Route::middleware(['auth', EnsureUserIsAdmin::class])->group(function () {
+Route::middleware(['auth', EnsureUserIsAdmin::class])->prefix('admin')->group(function () {
+    // NOTE - Perbaiki endpoint ini nanti
     Route::controller(UserController::class)->group(function () {
-        Route::get('/admin/users', 'getAll');
-        Route::delete('/admin/users/{id}', 'delete');
-        Route::get('/admin/users/summary', 'summary');
-        Route::post('/admin/users/create', 'create');
-        Route::post('/admin/users/{id}/update', 'update');
+        Route::get('/users', 'getAll');
+        Route::delete('/users/{id}', 'delete');
+        Route::get('/users/summary', 'summary');
+        Route::post('/users/create', 'create');
+        Route::post('/users/{id}/update', 'update');
     });
 
     Route::controller(MenuController::class)->group(function () {
-        Route::post('/admin/menus', 'create');
-        Route::post('/admin/menus/{id}', 'update');
-        Route::delete('/admin/menus/{id}', 'delete');
-        Route::get('/admin/menus/summary', 'summary');
+        Route::post('/menus', 'create');
+        Route::post('/menus/{id}', 'update');
+        Route::delete('/menus/{id}', 'delete');
+        Route::get('/menus/summary', 'summary');
     });
 
     Route::controller(EventController::class)->group(function () {
-        Route::post('/admin/events', 'create');
-        Route::post('/admin/events/{id}', 'update');
-        Route::delete('/admin/events/{id}', 'delete');
-        Route::get('/admin/events/summary', 'summary');
+        Route::post('/events', 'create');
+        Route::post('/events/{id}', 'update');
+        Route::delete('/events/{id}', 'delete');
+        Route::get('/events/summary', 'summary');
     });
 
     Route::controller(TableController::class)->group(function () {
-        Route::post('/admin/tables', 'create');
-        Route::get('/admin/tables/{id}', 'get')->where('id', '[0-9]+');
-        Route::delete('/admin/tables/{id}', 'delete')->where('id', '[0-9]+');
-        Route::put('/admin/tables/{id}', 'update')->where('id', '[0-9]+');
+        Route::post('/tables', 'create');
+        Route::get('/tables/{id}', 'get')->where('id', '[0-9]+');
+        Route::delete('/tables/{id}', 'delete')->where('id', '[0-9]+');
+        Route::put('/tables/{id}', 'update')->where('id', '[0-9]+');
     });
 
     Route::controller(CategoryController::class)->group(function () {
-        Route::post('/admin/categories', 'create');
-        Route::post('/admin/categories/{id}', 'update')->where('id', '[0-9]+');
-        Route::delete('/admin/categories/{id}', 'delete')->where('id', '[0-9]+');
+        Route::post('/categories', 'create');
+        Route::post('/categories/{id}', 'update')->where('id', '[0-9]+');
+        Route::delete('/categories/{id}', 'delete')->where('id', '[0-9]+');
     });
 
     Route::controller(OrderController::class)->group(function () {
-        Route::get('/admin/orders', 'getAllAdmin');
-        Route::get('/admin/orders/summary', 'summary');
+        Route::get('/orders', 'getAllAdmin');
+        Route::get('/orders/summary', 'summary');
     });
 
     Route::controller(ReservationController::class)->group(function () {
-        Route::get('/admin/reservations', 'getAllAdmin');
+        Route::get('/reservations', 'getAllAdmin');
     });
 });

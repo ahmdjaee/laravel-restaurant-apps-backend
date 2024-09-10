@@ -24,7 +24,7 @@ class MenuResource extends JsonResource
             'active' => $this->active >= 1 ? true : false,
             'image' => url()->route('image', ['path' => $this->image, 'w' => 500, 'h' => 500, 'fit' => 'crop']),
             'image_large' => url()->route('image', ['path' => $this->image, 'w' => 800, 'h' => 800, 'fit' => 'crop']),
-            'category' => $this->category,
+            'category' => new CategoryResource($this->category),
         ];
     }
 }

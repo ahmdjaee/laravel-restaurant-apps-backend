@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CartItemRequest;
 use App\Http\Resources\CartItemResource;
-use App\Models\Cart;
 use App\Models\CartItem;
 use App\Utils\Trait\ApiResponse;
 use Illuminate\Http\JsonResponse;

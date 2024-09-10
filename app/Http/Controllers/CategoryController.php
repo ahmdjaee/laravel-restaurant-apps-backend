@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
@@ -38,49 +39,39 @@ class CategoryController extends Controller
 
     public function update(int $id, Request $request): JsonResponse
     {
-        $category = Category::find($id);
-
-        if ($category == null) {
-            $this->validationRequest('Category id does not exist', 404);
-        }
-
+        $category = Category::findOrFail($id);
+    
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'max:100']
+            'name' => ['required', 'max:100', Rule::unique('categories')->ignore($category->id)],
+            'image' => ['nullable', 'image', 'max:5120']
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
-
-        $data = $validator->validate();
-
+    
+        $data = $validator->validated();
+    
         if ($request->hasFile('image')) {
-            $request->validate(['image' => ['image', 'max:5120']]);
-            $category->image != null && Storage::delete($category->image);
+            if ($category->image) {
+                Storage::delete($category->image);
+            }
             $data['image'] = $request->file('image')->store('categories');
         }
-
-        if ($category->name !== $request->input('name') && $category) {
-            return response()->json(['errors' => [
-                'name' => 'Category name already exist'
-            ]], 400);
-        }
-
-        if ($category->name !== $request->input('name')) {
-            $category->update($data);
-        }
-
+    
+        $category->update($data);
+    
         return $this->apiResponse(
             new CategoryResource($category),
             'Category updated successfully',
             200
         );
     }
+    
 
     public function getAll(): JsonResponse
     {
         $collection = Category::all(['id', 'name', 'image']);
-
         return $this->apiResponse(CategoryResource::collection($collection));
     }
 

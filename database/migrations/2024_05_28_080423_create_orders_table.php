@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable(false);
             $table->string('token')->nullable();
             $table->unsignedBigInteger('reservation_id')->nullable();
             $table->enum('status', ['new',  'checkout', 'paid', 'failed', 'completed'])->nullable()->default('new');

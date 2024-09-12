@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Utils\Trait\ApiResponse;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -117,7 +118,14 @@ class UserController extends Controller
             $this->validationRequest('You cannot delete yourself', 400);
         }
 
-        $user->delete();
+        try {
+            //code...
+            $user->delete();
+        } catch (QueryException $e) {
+            if ($e->getCode() == '23000') {
+                $this->validationRequest("Cannot delete if the user has a reservation or order, can only deactivate", 400);
+            }
+        }
 
         return $this->apiResponse(true, 'User deleted successfully', 200);
     }

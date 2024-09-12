@@ -18,6 +18,7 @@ class Table extends Model
     protected $fillable = [
         'no',
         'status',
-        'capacity'
+        'capacity',
+        'active'
     ];
 }

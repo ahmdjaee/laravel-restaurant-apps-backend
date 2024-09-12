@@ -18,8 +18,8 @@ return new class extends Migration {
             $table->text('notes')->nullable();
             $table->timestamps();
 
-            $table->foreign('cart_id')->references('id')->on('carts');
-            $table->foreign('menu_id')->references('id')->on('menus');
+            $table->foreign('cart_id')->references('id')->on('carts')->onDelete("CASCADE");
+            $table->foreign('menu_id')->references('id')->on('menus')->onDelete("CASCADE");
         });
     }
 

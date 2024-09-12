@@ -14,16 +14,16 @@ class TableSeeder extends Seeder
     public function run(): void
     {
         Table::insert([
-            ['no' => '1', 'capacity' => 5, 'status' => 'available'],
-            ['no' => '2', 'capacity' => 5, 'status' => 'available'],
-            ['no' => '3', 'capacity' => 5, 'status' => 'available'],
-            ['no' => '4', 'capacity' => 5, 'status' => 'available'],
-            ['no' => '5', 'capacity' => 5, 'status' => 'available'],
-            ['no' => '6', 'capacity' => 5, 'status' => 'available'],
-            ['no' => '7', 'capacity' => 5, 'status' => 'available'],
-            ['no' => '8', 'capacity' => 5, 'status' => 'available'],
-            ['no' => '9', 'capacity' => 5, 'status' => 'available'],
-            ['no' => '10', 'capacity' => 5, 'status' => 'available'],
+            ['no' => 'T01', 'capacity' => 5, 'status' => 'available'],
+            ['no' => 'T02', 'capacity' => 5, 'status' => 'available'],
+            ['no' => 'T03', 'capacity' => 5, 'status' => 'available'],
+            ['no' => 'T04', 'capacity' => 5, 'status' => 'available'],
+            ['no' => 'T05', 'capacity' => 5, 'status' => 'available'],
+            ['no' => 'T06', 'capacity' => 5, 'status' => 'available'],
+            ['no' => 'T07', 'capacity' => 5, 'status' => 'available'],
+            ['no' => 'T08', 'capacity' => 5, 'status' => 'available'],
+            ['no' => 'T09', 'capacity' => 5, 'status' => 'available'],
+            ['no' => 'T10', 'capacity' => 5, 'status' => 'available'],
         ]);
     }
 }

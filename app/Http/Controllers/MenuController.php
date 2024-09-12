@@ -7,6 +7,7 @@ use App\Http\Resources\MenuResource;
 use App\Models\Menu;
 use App\Utils\Trait\ApiResponse;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -33,7 +34,7 @@ class MenuController extends Controller
         if ($menu == null || !$menu) {
             $this->validationRequest('Menu id does not exist', 404);
         }
-        
+
         $data = $request->validated();
         if (isset($data['tags'])) $data['tags'] = implode(',', $data['tags']);
         else $data['tags'] = null;
@@ -69,7 +70,14 @@ class MenuController extends Controller
             $this->validationRequest('Menu id does not exist', 404);
         }
 
-        $menu->delete();
+        try {
+            //code...
+            $menu->delete();
+        } catch (QueryException $e) {
+            if ($e->getCode() == '23000') {
+                $this->validationRequest("Cannot delete if the menu used in order, can only deactivate", 400);
+            }
+        }
 
         return $this->apiResponse(true, 'Menu deleted successfully', 200);
     }

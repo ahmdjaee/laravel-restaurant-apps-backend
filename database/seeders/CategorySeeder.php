@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
@@ -14,9 +13,21 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         Category::insert([
-            ['name' => 'Food', 'image' => 'https://cdn-icons-png.flaticon.com/512/147/147144.png'],
-            ['name' => 'Beverage', 'image' => 'https://cdn-icons-png.flaticon.com/512/147/147144.png'],
-            ['name' => 'Dessert', 'image' => 'https://cdn-icons-png.flaticon.com/512/147/147144.png'],
+            [
+                'name' => 'Food',
+                'image' => 'categories/TNqx39rTgzUYf1iQNNqYngG6XblJPfIuaL8Y8GrJ.jpg',
+                'created_at' => now()
+            ],
+            [
+                'name' => 'Beverage',
+                'image' => 'categories/UUD6UyIbVjwADSuis3lTjKYzsi0kdQKh2lSFuq2T.jpg',
+                'created_at' => now()
+            ],
+            [
+                'name' => 'Dessert',
+                'image' => 'categories/2jJP0kdz8lZfCza2qFvLX6554v8x7n3xQLPDQFjf.jpg',
+                'created_at' => now()
+            ],
         ]);
     }
 }

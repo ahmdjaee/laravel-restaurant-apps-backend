@@ -31,6 +31,12 @@ class ReservationRequest extends FormRequest
             'time' => ['required'],
             'persons' => ['required', 'numeric'],
             'notes' => ['nullable'],
+            'status' => ['nullable', Rule::enum(StatusReservation::class)->only([
+                StatusReservation::canceled,
+                StatusReservation::confirmed,
+                StatusReservation::pending,
+                StatusReservation::completed    
+            ])]
         ];
     }
 

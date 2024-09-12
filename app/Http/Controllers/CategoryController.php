@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Utils\Trait\ApiResponse;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -19,7 +20,8 @@ class CategoryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:100', 'unique:categories,name'],
-            'image' => ['required', 'image', 'max:5120']
+            'image' => ['required', 'image', 'max:5120'],
+            'active' => ['required', 'boolean']
         ]);
 
         if ($validator->fails()) {
@@ -40,38 +42,39 @@ class CategoryController extends Controller
     public function update(int $id, Request $request): JsonResponse
     {
         $category = Category::findOrFail($id);
-    
+
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:100', Rule::unique('categories')->ignore($category->id)],
-            'image' => ['nullable', 'image', 'max:5120']
+            'image' => ['nullable', 'image', 'max:5120'],
+            'active' => ['required', 'boolean']
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
-    
+
         $data = $validator->validated();
-    
+
         if ($request->hasFile('image')) {
             if ($category->image) {
                 Storage::delete($category->image);
             }
             $data['image'] = $request->file('image')->store('categories');
         }
-    
+
         $category->update($data);
-    
+
         return $this->apiResponse(
             new CategoryResource($category),
             'Category updated successfully',
             200
         );
     }
-    
+
 
     public function getAll(): JsonResponse
     {
-        $collection = Category::all(['id', 'name', 'image']);
+        $collection = Category::all(['id', 'name', 'image', 'active']);
         return $this->apiResponse(CategoryResource::collection($collection));
     }
 
@@ -83,7 +86,14 @@ class CategoryController extends Controller
             $this->validationRequest('Category id does not exist', 404);
         }
 
-        $category->delete();
+        try {
+            //code...
+            $category->delete();
+        } catch (QueryException $e) {
+            if ($e->getCode() == '23000') {
+                $this->validationRequest("Cannot delete if the category has a menu, can only deactivate", 400);
+            }
+        }
         return $this->apiResponse(true, 'Category deleted successfully', 200);;
     }
 

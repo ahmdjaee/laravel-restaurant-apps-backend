@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable(false);
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('table_id')->nullable(false);
             $table->date('date')->nullable(false);
             $table->time('time')->nullable(false);

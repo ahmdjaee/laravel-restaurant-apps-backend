@@ -26,9 +26,10 @@ class TableRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'no' => ['required'],
+            'no' => ['required', Rule::unique('tables')->ignore($this->route('id'))],
             'status' => ['required', Rule::enum(StatusTable::class)->only([StatusTable::available, StatusTable::booked, StatusTable::used])],
-            'capacity' => ['required', 'numeric']
+            'capacity' => ['required', 'numeric'],
+            'active' => ['nullable', 'boolean'],
         ];
     }
 

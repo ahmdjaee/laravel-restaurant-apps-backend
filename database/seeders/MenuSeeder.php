@@ -18,8 +18,8 @@ class MenuSeeder extends Seeder
                 'category_id' => 1,
                 'price' => 20000,
                 'stock' => 10,
-                'image' => 'https://www.chilipeppermadness.com/wp-content/uploads/2020/11/Nasi-Goreng-Indonesian-Fried-Rice-SQ.jpg',
-                'description' => 'Nasi goreng dengan bumbu kacang'
+                'image' => 'menus/PTR6hs64GcwPQLLCWRC7DsRTeFi2HDeg4pP3AT94.jpg',
+                'description' => 'Nasi goreng special pake telor'
             ],
 
             [
@@ -27,7 +27,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 1, // Masakan Padang
                 'price' => 35000,
                 'stock' => 15,
-                'image' => 'https://www.astronauts.id/blog/wp-content/uploads/2023/03/Resep-Rendang-Daging-Sapi-Untuk-Lebaran-Gurih-dan-Nikmat-1024x683.jpg',
+                'image' => 'menus/VXMeype3B5uTA78YgMkwCssiBSpbMiEUXCm5tOJ1.jpg',
                 'description' => 'Daging sapi yang dimasak lama dengan santan dan rempah-rempah'
             ],
             [
@@ -35,7 +35,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 1, // Sate
                 'price' => 15000,
                 'stock' => 12,
-                'image' => 'https://asset.kompas.com/crops/96rHbnDkTGNa8Y-xW247623hONA=/0x0:1000x667/750x500/data/photo/2023/12/19/6580e31d4d33e.jpeg',
+                'image' => 'menus/T8aYmq0Se8zb0S2Ajgo5uhf85UTxxZG5H5uRrrdD.jpg',
                 'description' => 'Daging ayam yang ditusuk dan dibakar, disajikan dengan saus kacang'
             ],
             [
@@ -43,7 +43,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 1, // Masakan Betawi
                 'price' => 20000,
                 'stock' => 10,
-                'image' => 'https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2023/08/03072041/Resep-Soto-Betawi-Daging-Tanpa-Santan-Pas-untuk-Menu-Harian-.jpg.webp',
+                'image' => 'menus/bhWkOSJo9IWqKqyG8Y1JmUty3xnwEnktp2Sjdrlz.webp',
                 'description' => 'Sup daging sapi dan jeroan dengan kuah santan dan rempah-rempah'
             ],
             [
@@ -51,7 +51,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 1, // Salad
                 'price' => 18000,
                 'stock' => 8,
-                'image' => 'https://lingkar.news/wp-content/uploads/2023/04/Resep-Gado-Gado-Betawi-Hidangan-Buka-Puasa-Bergizi-dan-Nikmat.jpg',
+                'image' => 'menus/nKGZEpKvhUapwRQdxDIeLQf0t8lfhSHSZ0hNbTHf.webp',
                 'description' => 'Salad sayur dengan saus kacang'
             ],
             [
@@ -59,7 +59,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 1, // Bakso
                 'price' => 12000,
                 'stock' => 15,
-                'image' => 'https://paxelmarket.co/wp-content/uploads/2022/02/Bakso-Komplit.jpg',
+                'image' => 'menus/oHdRsWVJ2d7OHV2bi8WziUBOyffpSCubI1dZTrMI.jpg',
                 'description' => 'Bola daging cincang yang disajikan dengan kuah kaldu'
             ],
             [
@@ -67,8 +67,8 @@ class MenuSeeder extends Seeder
                 'category_id' => 1, // Palembang
                 'price' => 10000,
                 'stock' => 20,
-                'image' => 'https://lingkar.news/wp-content/uploads/2023/03/Aneka-Resep-Pempek-Makanan-Tradisional-Khas-Palembang.jpg',
-                'description' => 'Enakkan ikan yang digoreng dengan tepung'
+                'image' => 'menus/toyXtoPEMzpSD20K5NPm0Wkr55CXvMYnHt31avJF.jpg',
+                'description' => 'Olahan ikan yang digoreng dengan tepung'
             ],
 
 
@@ -78,32 +78,32 @@ class MenuSeeder extends Seeder
                 'category_id' => 2,
                 'price' => 5000,
                 'stock' => 10,
-                'image' => 'https://asset.kompas.com/crops/vX_ULbw0h4h-CclfUmCXhfjxwTU=/0x0:880x587/750x500/data/photo/2023/08/16/64dc53ca9f3db.jpg',
-                'description' => 'Es teh'
+                'image' => 'menus/WBZTGvrnlzQMb6AZd7ic00Nm3YLn4Xlqzf6epr7h.png',
+                'description' => 'Es teh dengan daun teh pucuk pilihan'
             ],
             [
                 'name' => 'Es Jeruk',
                 'category_id' => 2,
                 'price' => 5000,
                 'stock' => 10,
-                'image' => 'https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2023/03/09062214/X-Manfaat-Es-Jeruk-dan-Resep-untuk-Membuatnya.jpg',
-                'description' => 'Es jeruk'
+                'image' => 'menus/kKKjXGoakT4KAvj3LtC78Ntyzb0KPJrPUoVgBaeh.jpg',
+                'description' => 'Es jeruk yang dibuat dengan bahan dasar jeruk mandarin'
             ],
             [
                 'name' => 'Es Cincau',
                 'category_id' => 2,
                 'price' => 5000,
                 'stock' => 10,
-                'image' => 'https://cdn0-production-images-kly.akamaized.net/odquRJ7gUHLSKdigzmLi9QchHQI=/0x0:662x883/469x625/filters:quality(75):strip_icc():format(webp)/kly-media-production/medias/4382480/original/095965700_1680582742-shutterstock_2283035963.jpg',
-                'description' => 'Es cincau'
+                'image' => 'menus/cWXXUx0LErmT97gNz2PFBl053iJXyf8CoyDEUoKE.webp',
+                'description' => 'Es cincau yang diolah dengan daun cincau pilihan'
             ],
             [
                 'name' => 'Es Kopi',
                 'category_id' => 2,
                 'price' => 5000,
                 'stock' => 10,
-                'image' => 'https://kurio-img.kurioapps.com/21/07/06/e0f921c0-97fe-48d6-84ba-60d131b605e9.jpe',
-                'description' => 'Es kopi'
+                'image' => 'menus/p16kOvt2cCm3r3UFkgZ3PXwFSKJT3gS7HOHzYUU8.webp',
+                'description' => 'Kopi special yang dibuat dengan kopi americano pilihan'
             ],
 
 
@@ -113,7 +113,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 3,
                 'price' => 15000,
                 'stock' => 10,
-                'image' => 'https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2022/11/12165826/Resep-Kue-Kacang-Betawi.jpg',
+                'image' => 'menus/GimGqbeGE2ZabpSYtGwnBM2RyPKYVPqfeHKBr5cU.jpg',
                 'description' => 'Kue kacang dengan rasa gurih dan manis yang khas, dibuat dengan bahan-bahan pilihan.'
             ],
             [
@@ -121,7 +121,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 3,
                 'price' => 20000,
                 'stock' => 20,
-                'image' => 'https://www.hersheys.com/content/dam/sm-fimages/media-center-media/Hersheys/images/products/vanilla-ice-cream.jpg',
+                'image' => 'menus/TKlYlVpg777i01L8aHkivMv6ORFEGQef55z3Ugol.jpg',
                 'description' => 'Es krim vanila yang lembut dengan rasa vanila yang kaya dan manis.'
             ],
             [
@@ -129,7 +129,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 3,
                 'price' => 18000,
                 'stock' => 15,
-                'image' => 'https://www.masakapahariini.com/wp-content/uploads/2021/06/puding-coklat-780x440.jpg',
+                'image' => 'menus/6AL1sAtb3b19LWkbmxHll5HUBl9f27lqLFzGGztP.jpg',
                 'description' => 'Puding coklat yang lembut dengan rasa coklat yang kaya dan tekstur yang halus.'
             ],
             [
@@ -137,7 +137,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 3,
                 'price' => 15000,
                 'stock' => 10,
-                'image' => 'https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2022/11/12165826/Resep-Kue-Kacang-Betawi.jpg',
+                'image' => 'menus/AR9wW2wERR7x9FHiquQorV7cNIiHeg2BHSFUfK7y.jpg',
                 'description' => 'Kue susu dengan rasa susu yang lembut dan manis.'
             ],
             [
@@ -145,7 +145,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 3,
                 'price' => 30000,
                 'stock' => 8,
-                'image' => 'https://www.simplyrecipes.com/thmb/5aRtL5ds7v0P6MmcRS7tT68CwWY=/2000x1500/filters:no_upscale():max_bytes(150000):strip_icc()/Simply-Recipes-Strawberry-Cheesecake-LEAD-1-4c3ed5ab0e0748c6b36e2e6a0c301e4f.jpg',
+                'image' => 'menus/529SWfdXlZSKPByMrzozZvN0qjSPRbQw2zbgjtxY.jpg',
                 'description' => 'Cheesecake dengan topping strawberry segar dan rasa yang lembut dan creamy.'
             ],
             [
@@ -153,7 +153,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 3,
                 'price' => 20000,
                 'stock' => 20,
-                'image' => 'https://www.hersheys.com/content/dam/sm-fimages/media-center-media/Hersheys/images/products/chocolate-ice-cream.jpg',
+                'image' => 'menus/MkAy2YtUPxdnnsdBZffe52sE9qxbCRUB4V1zRmXO.jpg',
                 'description' => 'Es krim coklat yang lembut dengan rasa coklat yang kaya dan manis.'
             ],
             [
@@ -161,7 +161,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 3,
                 'price' => 35000,
                 'stock' => 7,
-                'image' => 'https://www.simplyrecipes.com/thmb/CYRU-t8m8JChdoXkV6lS-jyfJK4=/2000x1500/filters:no_upscale():max_bytes(150000):strip_icc()/Simply-Recipes-Tiramisu-LEAD-3-5965f8ed39f9445b93c0db9a8f5f60e0.jpg',
+                'image' => 'menus/iojEQE7bGDClC4eJRr1ETOHimGscAOOnjcbBAlvR.jpg',
                 'description' => 'Tiramisu klasik dengan lapisan krim mascarpone, kopi, dan bubuk kakao.'
             ],
             [
@@ -169,7 +169,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 3,
                 'price' => 18000,
                 'stock' => 15,
-                'image' => 'https://www.masakapahariini.com/wp-content/uploads/2021/06/puding-mangga-780x440.jpg',
+                'image' => 'menus/cyzWnHRHS7KDm1fEvviO0PZe5EvKxF8OhZpPZLbc.webp',
                 'description' => 'Puding mangga yang lembut dengan rasa mangga yang segar dan manis.'
             ],
             [
@@ -177,7 +177,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 3,
                 'price' => 25000,
                 'stock' => 10,
-                'image' => 'https://www.simplyrecipes.com/thmb/NJ4Z6lfVBybMzz5nb7g9Y6xnPv0=/2000x1500/filters:no_upscale():max_bytes(150000):strip_icc()/Simply-Recipes-Brownies-LEAD-3-7d5d469c69dc47efbffef5f9c7d3b7a9.jpg',
+                'image' => 'menus/eC0O98MfcioEdbFVG8hf9moYALqvJ2TFZZXFEQdg.webp',
                 'description' => 'Brownies coklat yang kaya rasa dengan tekstur lembut dan padat.'
             ],
             [
@@ -185,7 +185,7 @@ class MenuSeeder extends Seeder
                 'category_id' => 3,
                 'price' => 20000,
                 'stock' => 20,
-                'image' => 'https://www.hersheys.com/content/dam/sm-fimages/media-center-media/Hersheys/images/products/strawberry-ice-cream.jpg',
+                'image' => 'menus/GjxLqVr0lX1aoWdk4QDpcnhvPWr4Ije4MIkHR2Yz.jpg',
                 'description' => 'Es krim stroberi dengan potongan buah stroberi segar dan rasa yang menyegarkan.'
             ]
 

@@ -19,6 +19,7 @@ class TableResource extends JsonResource
             'no' => $this->no,
             'capacity' => $this->capacity,
             'status' => $this->status,
+            'active' => $this->active == 1 ? true : false
         ];
     }
 }

@@ -18,6 +18,7 @@ class OrderResource extends JsonResource
         return [
             'id' => $this->id,
             'items' => OrderItemResource::collection(OrderItem::query()->where('order_id', $this->id)->get()),
+            'name'=> $this->name,
             'user' => new UserResource($this->user),
             'reservation' => new ReservationResource($this->reservation),
             'status' => $this->status,

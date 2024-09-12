@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->unsignedBigInteger('user_id')->nullable(false);
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('token')->nullable();
-            $table->unsignedBigInteger('reservation_id')->nullable(false);
+            $table->unsignedBigInteger('reservation_id')->nullable();
             $table->enum('status', ['new',  'checkout', 'paid', 'failed', 'completed'])->nullable()->default('new');
             $table->bigInteger('total_payment')->unsigned()->nullable()->default(12);
             $table->timestamps();

@@ -61,7 +61,6 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(ReservationController::class)->group(function () {
         Route::post('/reservations', 'reserve');
-        Route::put('/reservations/{id}', 'update')->where('id', '[0-9]+');
         Route::delete('/reservations/{id}', 'cancel')->where('id', '[0-9]+');
         Route::get('/reservations', 'get');
     });
@@ -131,5 +130,6 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])->prefix('admin')->group(fu
 
     Route::controller(ReservationController::class)->group(function () {
         Route::get('/reservations', 'getAllAdmin');
+        Route::put('/reservations/{id}', 'update')->where('id', '[0-9]+');
     });
 });

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('no', 100)->unique()->nullable(false);
             $table->enum('status', ['available', 'booked', 'used'])->nullable(false)->default('available');
             $table->integer('capacity')->nullable(false);
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

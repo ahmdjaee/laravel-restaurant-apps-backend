@@ -6,6 +6,7 @@ use App\Http\Requests\TableRequest;
 use App\Http\Resources\TableResource;
 use App\Models\Table;
 use App\Utils\Trait\ApiResponse;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -48,8 +49,15 @@ class TableController extends Controller
             $this->validationRequest('Table id does not exist', 404);
         }
 
-        $table->forceDelete();
-
+        try {
+            //code...
+            $table->delete();
+        } catch (QueryException $e) {
+            if ($e->getCode() == '23000') {
+                $this->validationRequest("Cannot delete if the table used in reservation, can only deactivate", 400);
+            }
+        }
+        
         return $this->apiResponse(true, 'Table deleted successfully', 200);
     }
 
